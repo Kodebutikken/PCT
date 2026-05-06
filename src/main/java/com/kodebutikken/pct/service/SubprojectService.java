@@ -15,12 +15,12 @@ public class SubprojectService {
         this.subprojectRepository = subprojectRepository;
     }
 
-    public void opretSubproject(int projectId, Subproject subproject) {
+    public void createSubproject(int projectId, Subproject subproject) {
         subproject.setProjectId(projectId);
         subprojectRepository.createSubproject(subproject);
     }
 
-    public List<Subproject> hentAlleSubprojects(int projectId) {
+    public List<Subproject> getAllProjects(int projectId) {
         return subprojectRepository.getSubprojectsByProjectId(projectId);
     }
 }

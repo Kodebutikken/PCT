@@ -28,7 +28,7 @@ public class SubprojectController {
         if (session.getAttribute("profileId") == null) {
             return "redirect:/profile/login";
         }
-        List<Subproject> subprojects = subprojectService.hentAlleSubprojects(id);
+        List<Subproject> subprojects = subprojectService.getAllProjects(id);
         model.addAttribute("subprojects", subprojects);
         model.addAttribute("projectId", id);
         return "subproject/index";
@@ -49,7 +49,7 @@ public class SubprojectController {
         if (session.getAttribute("profileId") == null) {
             return "redirect:/profile/login";
         }
-        subprojectService.opretSubproject(id, subproject);
+        subprojectService.createSubproject(id, subproject);
         return "redirect:/projects/" + id + "/subprojects";
     }
 }
