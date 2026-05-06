@@ -15,9 +15,9 @@ public class ProjectRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void createProject(Project project, int profileId) {
-        String sql = "INSERT INTO project (title, description, profile_id) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, project.getTitle(), project.getDescription(), profileId);
+    public void save(Project project, int profileId) {
+        String sql = "INSERT INTO project (title, description, deadline, profile_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, project.getTitle(), project.getDescription(), project.getDeadline(), profileId);
 
     }
 
