@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS pct;
+USE pct;
+
+DROP TABLE IF EXISTS project;
+
+CREATE TABLE project (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    deadline DATE,
+    created_by INTEGER NOT NULL,
+    FOREIGN KEY (created_by) REFERENCES user(id) ON DELETE CASCADE
+)
