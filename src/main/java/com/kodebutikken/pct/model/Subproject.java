@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Data
 
-public class Subprojekt {
+public class Subproject {
     private int id;
     private String titel;
     private String beskrivelse;
@@ -13,7 +13,7 @@ public class Subprojekt {
     private int projectId;
     private LocalDateTime createdAt;
 
-    public Subprojekt(int id, String titel, String beskrivelse, LocalDate deadline, int projectId, LocalDateTime createdAt) {
+    public Subproject(int id, String titel, String beskrivelse, LocalDate deadline, int projectId, LocalDateTime createdAt) {
         this.id = id;
         this.titel = titel;
         this.beskrivelse = beskrivelse;
@@ -22,7 +22,7 @@ public class Subprojekt {
         this.createdAt = createdAt;
     }
 
-    public Subprojekt() {
+    public Subproject() {
     }
 
 }
