@@ -11,3 +11,13 @@ CREATE TABLE project (
     created_by INTEGER NOT NULL,
     FOREIGN KEY (created_by) REFERENCES user(id) ON DELETE CASCADE
 )
+CREATE TABLE IF NOT EXISTS subproject (
+    id          INTEGER         AUTO_INCREMENT PRIMARY KEY,
+    titel       VARCHAR(255)    NOT NULL,
+    beskrivelse TEXT,
+    deadline    DATE,
+    project_id  INTEGER         NOT NULL,
+    created_at  DATETIME        DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE
+    );
