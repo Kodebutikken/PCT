@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class Project {
@@ -14,6 +15,8 @@ public class Project {
     private int createdBy;
     private List<Subproject> subprojects = new ArrayList<>();
 
+    public Project () {}
+
     public Project (int id, String title, String description, LocalDate deadline, int createdBy) {
         this.id = id;
         this.title = title;
@@ -21,4 +24,5 @@ public class Project {
         this.deadline = deadline;
         this.createdBy = createdBy;
     }
+
 }
