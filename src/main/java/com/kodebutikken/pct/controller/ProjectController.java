@@ -2,6 +2,7 @@ package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
+import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.service.ProjectService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -58,6 +59,11 @@ public class ProjectController {
             return "redirect:/profile/login";
         }
 
+        Role role = (Role) session.getAttribute("role");
+        if (role == null || role != Role.PROJECT_MANAGER) {
+            return "redirect:/access-denied";
+        }
+
         if(bindingResult.hasErrors()) {
             return "project/create";
         }
@@ -67,7 +73,7 @@ public class ProjectController {
         try {
             projectService.createProject(projectForm, profileId);
         } catch (IllegalArgumentException e) {
-            bindingResult.reject("glovalError", e.getMessage());
+            bindingResult.reject("globalError", e.getMessage());
             return "project/create";
         }
 

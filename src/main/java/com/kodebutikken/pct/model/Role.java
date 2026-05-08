@@ -1,6 +1,12 @@
 package com.kodebutikken.pct.model;
 
 public enum Role {
-    USER,
-    ADMIN
+    PROJECT_MANAGER("Projektleder"),
+    DEVELOPER("Udvikler");
+
+    private final String displayName;
+
+    Role(String displayName) {
+        this.displayName = displayName;
+    }
 }
