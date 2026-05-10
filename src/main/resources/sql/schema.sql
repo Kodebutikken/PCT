@@ -40,3 +40,11 @@ CREATE TABLE task (
     FOREIGN KEY (resource_type_id) REFERENCES resource_type(id) ON DELETE SET NULL,
     FOREIGN KEY (resource_id) REFERENCES resource(id) ON DELETE SET NULL
 );
+
+CREATE TABLE users (
+                       id INT PRIMARY KEY AUTO_INCREMENT,
+                       name VARCHAR(100) NOT NULL,
+                       email VARCHAR(255) NOT NULL UNIQUE,
+                       password_hash VARCHAR(255) NOT NULL,
+                       role VARCHAR(50) NOT NULL
+);
