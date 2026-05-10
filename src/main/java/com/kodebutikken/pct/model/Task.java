@@ -26,4 +26,6 @@ public class Task {
         this.resourceTypeId = resourceTypeId;
         this.resourceId = resourceId;
     }
+
+    public Task() {}
 }

@@ -1,7 +1,9 @@
 package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.model.Subproject;
+import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.service.SubprojectService;
+import com.kodebutikken.pct.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,13 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/projects")
+@RequestMapping("/subprojects")
 public class SubprojectController {
 
     private final SubprojectService subprojectService;
+    private final TaskService taskService;
 
-    public SubprojectController(SubprojectService subprojectService) {
+
+
+    public SubprojectController(SubprojectService subprojectService, TaskService taskService) {
         this.subprojectService = subprojectService;
+        this.taskService = taskService;
     }
 
     @GetMapping("/{id}/subprojects")
@@ -52,4 +58,17 @@ public class SubprojectController {
         subprojectService.createSubproject(id, subproject);
         return "redirect:/projects/" + id + "/subprojects";
     }
+
+    @GetMapping("/{id}/tasks")
+    public String getTasksBySubproject(@PathVariable int id, Model model) {
+
+        List<Task> tasks = taskService.getTasksBySubprojectId(id);
+
+        model.addAttribute("tasks", tasks);
+        model.addAttribute("subprojectId", id);
+
+        return "task/list";
+    }
 }
+
+
