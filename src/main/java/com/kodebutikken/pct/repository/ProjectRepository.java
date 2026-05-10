@@ -31,4 +31,15 @@ public class ProjectRepository {
                 rs.getInt("created_by")
         ), profileId);
     }
+
+    public Project getProjectById(int projectId) {
+        String sql = "SELECT * FROM project WHERE id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Project(
+                rs.getInt("id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getDate("created_at").toLocalDate(),
+                rs.getInt("created_by")
+        ), projectId).stream().findFirst().orElse(null);
+    }
 }
