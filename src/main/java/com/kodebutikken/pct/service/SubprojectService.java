@@ -1,12 +1,12 @@
 package com.kodebutikken.pct.service;
 
+import com.kodebutikken.pct.dto.SubprojectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.repository.ProjectRepository;
 import com.kodebutikken.pct.repository.SubprojectRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,25 +20,18 @@ public class SubprojectService {
         this.projectRepository = projectRepository;
     }
 
-    public void createSubproject(int projectId, Subproject subproject) {
+    public void createSubproject(int projectId, SubprojectForm form) {
         Project project = projectRepository.getProjectById(projectId);
         if (project == null) {
             throw new IllegalArgumentException("Projekt med id " + projectId + " eksisterer ikke");
         }
 
-        if (subproject.getTitel() == null || subproject.getTitel().isBlank()) {
-            throw new IllegalArgumentException("Titel må ikke være tom");
-        }
-
-        if (subproject.getDeadline() == null) {
-            throw new IllegalArgumentException("Deadline må ikke være tom");
-        }
-
-        if (subproject.getDeadline().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Deadline skal være en fremtidig dato");
-        }
-
+        Subproject subproject = new Subproject();
+        subproject.setTitel(form.getTitel());
+        subproject.setDescription(form.getBeskrivelse());
+        subproject.setDeadline(form.getDeadline());
         subproject.setProjectId(projectId);
+
         subprojectRepository.createSubproject(subproject);
     }
 
