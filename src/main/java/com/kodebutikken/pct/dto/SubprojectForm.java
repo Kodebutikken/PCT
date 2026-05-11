@@ -14,11 +14,11 @@ public class SubprojectForm {
     @Getter
     @Setter
     @NotBlank(message = "Subproject title is required")
-    private String titel;
+    private String title;
 
     @Getter
     @Setter
-    private String beskrivelse;
+    private String Description;
 
     @Getter
     @Setter

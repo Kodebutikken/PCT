@@ -27,8 +27,8 @@ public class SubprojectService {
         }
 
         Subproject subproject = new Subproject();
-        subproject.setTitel(form.getTitel());
-        subproject.setDescription(form.getBeskrivelse());
+        subproject.setTitle(form.getTitle());
+        subproject.setDescription(form.getDescription());
         subproject.setDeadline(form.getDeadline());
         subproject.setProjectId(projectId);
 
