@@ -35,7 +35,7 @@ public class ProjectController {
         List<Project> projects = projectService.getProjectsByProfileId((int) session.getAttribute("profileId"));
         model.addAttribute("projects", projects);
 
-        return "projects";
+        return "project/projects";
     }
 
     @GetMapping("/create")
