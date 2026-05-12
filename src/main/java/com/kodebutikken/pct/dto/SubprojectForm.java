@@ -18,7 +18,7 @@ public class SubprojectForm {
 
     @Getter
     @Setter
-    private String Description;
+    private String description;
 
     @Getter
     @Setter
