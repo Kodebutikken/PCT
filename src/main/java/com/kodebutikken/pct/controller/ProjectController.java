@@ -3,7 +3,9 @@ package com.kodebutikken.pct.controller;
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.Role;
+import com.kodebutikken.pct.model.User;
 import com.kodebutikken.pct.service.ProjectService;
+import com.kodebutikken.pct.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -21,9 +23,11 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final UserService userService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, UserService userService) {
         this.projectService = projectService;
+        this.userService = userService;
     }
 
     @GetMapping()
@@ -59,16 +63,17 @@ public class ProjectController {
             return "redirect:/profile/login";
         }
 
-        Role role = (Role) session.getAttribute("role");
-        if (role != Role.PROJECT_MANAGER) {
+        int userId = (int) session.getAttribute("userId");
+
+        User user = userService.getUserById(userId);
+
+        if (user.getRole() != Role.PROJECT_MANAGER) {
             return "redirect:/access-denied";
         }
 
         if(bindingResult.hasErrors()) {
             return "project/create";
         }
-
-        int userId = (int) session.getAttribute("userId");
 
         try {
             projectService.createProject(projectForm, userId);

@@ -38,4 +38,8 @@ public class UserService {
         if (user != null && passwordEncoder.matches(loginForm.getPassword(), user.getPasswordHash())) return user;
         return null;
     }
+
+    public User getUserById(int userId) {
+        return userRepository.findById(userId);
+    }
 }
