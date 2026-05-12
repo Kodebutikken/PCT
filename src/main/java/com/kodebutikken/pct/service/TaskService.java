@@ -21,6 +21,15 @@ public class TaskService {
         if(!subprojectService.existsById(subprojectId)) {
             throw new IllegalArgumentException("Delprojekt findes ikke");
         }
+
+        if(taskForm.getEstimatedTime() <= 0) {
+            throw new IllegalArgumentException("Timer skal være større end 0");
+        }
+
+        if(taskForm.getTitle() == null || taskForm.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Titel må ikke være tom");
+        }
+
         if(taskForm.getDeadline() != null && taskForm.getDeadline().isBefore(java.time.LocalDate.now())) {
             throw new IllegalArgumentException("Deadline må ikke være i fortiden");
         }
