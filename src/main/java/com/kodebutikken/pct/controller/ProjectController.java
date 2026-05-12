@@ -60,7 +60,7 @@ public class ProjectController {
         }
 
         Role role = (Role) session.getAttribute("role");
-        if (role == null || role != Role.PROJECT_MANAGER) {
+        if (role != Role.PROJECT_MANAGER) {
             return "redirect:/access-denied";
         }
 
