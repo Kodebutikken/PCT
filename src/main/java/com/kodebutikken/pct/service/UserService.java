@@ -1,17 +1,21 @@
 package com.kodebutikken.pct.service;
 
+import com.kodebutikken.pct.dto.LoginForm;
 import com.kodebutikken.pct.dto.RegisterForm;
 import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.model.User;
 import com.kodebutikken.pct.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void register(RegisterForm registerForm) {
@@ -19,11 +23,19 @@ public class UserService {
             throw new IllegalArgumentException("Email already exists");
         }
 
+        String hashedPassword = passwordEncoder.encode(registerForm.getPassword());
+
         User user = new User();
         user.setName(registerForm.getName());
         user.setEmail(registerForm.getEmail());
-        user.setPasswordHash(registerForm.getPassword()); // Uden hashing for enkelhed, men bør implementeres i produktion
+        user.setPasswordHash(hashedPassword);
         user.setRole(Role.DEVELOPER); // Standardrolle, kan ændres baseret på forretningslogik
         userRepository.createUser(user);
+    }
+
+    public User authenticate(LoginForm loginForm) {
+        User user = userRepository.findByEmail(loginForm.getEmail());
+        if (user != null && passwordEncoder.matches(loginForm.getPassword(), user.getPasswordHash())) return user;
+        return null;
     }
 }
