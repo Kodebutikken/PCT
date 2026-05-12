@@ -1,5 +1,6 @@
 package com.kodebutikken.pct.service;
 
+import com.kodebutikken.pct.dto.TaskForm;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -9,14 +10,41 @@ import java.util.List;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final SubprojectService subprojectService;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, SubprojectService subprojectService) {
         this.taskRepository = taskRepository;
+        this.subprojectService = subprojectService;
     }
 
-    public void createTask(Task task) {
-        // Implementer logikken for at oprette en opgave i databasen
-        // Du kan bruge en repository eller DAO til at håndtere databaseoperationerne
+    public void createTask(TaskForm taskForm, int subprojectId, int profileId) {
+        if(!subprojectService.existsById(subprojectId)) {
+            throw new IllegalArgumentException("Delprojekt findes ikke");
+        }
+
+        if(taskForm.getEstimatedTime() <= 0) {
+            throw new IllegalArgumentException("Timer skal være større end 0");
+        }
+
+        if(taskForm.getTitle() == null || taskForm.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Titel må ikke være tom");
+        }
+
+        if(taskForm.getDeadline() != null && taskForm.getDeadline().isBefore(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Deadline må ikke være i fortiden");
+        }
+        Integer ownerId = subprojectService.getProjectOwnerId(subprojectId);
+        if(ownerId == null || ownerId != profileId) {
+            throw new IllegalArgumentException("Du har ikke adgang til dette projekt");
+        }
+
+        Task task = new Task();
+        task.setTitle(taskForm.getTitle());
+        task.setDescription(taskForm.getDescription());
+        task.setEstimatedHours(taskForm.getEstimatedTime());
+        task.setDeadline(taskForm.getDeadline());
+        task.setSubprojectId(subprojectId);
+
         taskRepository.createTask(task);
     }
 
