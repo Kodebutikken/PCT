@@ -13,15 +13,18 @@ public class SubprojectForm {
 
     @Getter
     @Setter
+
     @NotBlank(message = "Subproject title is required")
     private String title;
 
     @Getter
     @Setter
+
     private String description;
 
     @Getter
     @Setter
+
     @NotNull(message = "Deadline is required")
     @Future(message = "Deadline must be a future date")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
