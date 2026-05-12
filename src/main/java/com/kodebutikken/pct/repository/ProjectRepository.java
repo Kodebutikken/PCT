@@ -15,13 +15,13 @@ public class ProjectRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(Project project, int profileId) {
-        String sql = "INSERT INTO project (title, description, deadline, profile_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, project.getTitle(), project.getDescription(), project.getDeadline(), profileId);
+    public void save(Project project, int userId) {
+        String sql = "INSERT INTO project (title, description, deadline, created_by) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, project.getTitle(), project.getDescription(), project.getDeadline(), userId);
 
     }
 
-    public List<Project> getProjectsByProfileId(int profileId) {
+    public List<Project> getProjectsByUserId(int userId) {
         String sql = "SELECT * FROM project WHERE created_by = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Project(
                 rs.getInt("id"),
@@ -29,6 +29,6 @@ public class ProjectRepository {
                 rs.getString("description"),
                 rs.getDate("created_at").toLocalDate(),
                 rs.getInt("created_by")
-        ), profileId);
+        ), userId);
     }
 }

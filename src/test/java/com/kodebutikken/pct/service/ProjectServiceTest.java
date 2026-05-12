@@ -3,8 +3,6 @@ package com.kodebutikken.pct.service;
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.repository.ProjectRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -65,20 +63,20 @@ class ProjectServiceTest {
     }
 
     @Test
-    void getProjectsByProfileId() {
+    void getProjectsByUserId() {
         List<Project> mockProjects = List.of(
                 new Project(1, "Project 1", "Description 1", LocalDate.now().plusDays(5), 1),
                 new Project(2, "Project 2", "Description 2", LocalDate.now().plusDays(10), 1)
         );
 
-        when(projectRepository.getProjectsByProfileId(1)).thenReturn(mockProjects);
+        when(projectRepository.getProjectsByUserId(1)).thenReturn(mockProjects);
 
-        List<Project> result = projectService.getProjectsByProfileId(1);
+        List<Project> result = projectService.getProjectsByUserId(1);
 
         assertEquals(2, result.size());
         assertEquals("Project 1", result.get(0).getTitle());
         assertEquals("Project 2", result.get(1).getTitle());
 
-        verify(projectRepository).getProjectsByProfileId(1);
+        verify(projectRepository).getProjectsByUserId(1);
     }
 }
