@@ -16,9 +16,9 @@ public class ProjectService {
         this.projectRepository = projectRepository;
     }
 
-    public void createProject(ProjectForm projectForm, int profileId) {
+    public void createProject(ProjectForm projectForm, int userId) {
         // Implementer logikken for at oprette et projekt i databasen
-        // Brug profileId til at knytte projektet til den rigtige profil
+        // Brug userId til at knytte projektet til den rigtige profil
         // Du kan bruge en repository eller DAO til at håndtere databaseoperationerne
 
         if(projectForm.getDeadline() != null && projectForm.getDeadline().isBefore(java.time.LocalDate.now())) {
@@ -29,14 +29,14 @@ public class ProjectService {
         project.setTitle(projectForm.getTitle());
         project.setDescription(projectForm.getDescription());
         project.setDeadline(projectForm.getDeadline());
-        project.setCreatedBy(profileId);
+        project.setCreatedBy(userId);
 
-        projectRepository.save(project, profileId);
+        projectRepository.save(project, userId);
     }
 
-    public List<Project> getProjectsByProfileId(int profileId) {
+    public List<Project> getProjectsByUserId(int userId) {
         // Implementer logikken for at hente alle projekter for en given profil
-        // Brug profileId til at filtrere projekterne i databasen
-        return projectRepository.getProjectsByProfileId(profileId);
+        // Brug userId til at filtrere projekterne i databasen
+        return projectRepository.getProjectsByUserId(userId);
     }
 }

@@ -38,7 +38,7 @@ class ProjectControllerTest {
                 new Project(2, "Project 2", "Description 2", LocalDate.now(), 1)
                 );
 
-        when(projectService.getProjectsByProfileId(1)).thenReturn(projects);
+        when(projectService.getProjectsByUserId(1)).thenReturn(projects);
 
         mockMvc.perform(get("/projects").sessionAttr("profileId", 1))
                 .andExpect(status().isOk())
