@@ -19,6 +19,7 @@ CREATE TABLE project
     description TEXT,
     deadline    DATE,
     created_by  INTEGER      NOT NULL,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES user (id) ON DELETE CASCADE
 );
 

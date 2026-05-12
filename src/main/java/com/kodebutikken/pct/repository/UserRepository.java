@@ -40,4 +40,9 @@ public class UserRepository {
         String sql = "SELECT * FROM user WHERE email = ?";
         return jdbcTemplate.queryForObject(sql, userRowMapper, email);
     }
+
+    public User findById(int userId) {
+        String sql = "SELECT * FROM user WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, userRowMapper, userId);
+    }
 }
