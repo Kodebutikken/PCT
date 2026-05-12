@@ -17,12 +17,16 @@ public class TaskService {
         this.subprojectService = subprojectService;
     }
 
-    public void createTask(TaskForm taskForm, int subprojectId) {
+    public void createTask(TaskForm taskForm, int subprojectId, int profileId) {
         if(!subprojectService.existsById(subprojectId)) {
             throw new IllegalArgumentException("Delprojekt findes ikke");
         }
         if(taskForm.getDeadline() != null && taskForm.getDeadline().isBefore(java.time.LocalDate.now())) {
             throw new IllegalArgumentException("Deadline må ikke være i fortiden");
+        }
+        Integer ownerId = subprojectService.getProjectOwnerId(subprojectId);
+        if(ownerId == null || ownerId != profileId) {
+            throw new IllegalArgumentException("Du har ikke adgang til dette projekt");
         }
 
         Task task = new Task();

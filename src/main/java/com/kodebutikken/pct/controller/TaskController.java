@@ -29,8 +29,10 @@ public class TaskController {
             return "task/create";
         }
 
+        int profileId = (int) session.getAttribute("profileId");
+
         try {
-            taskService.createTask(taskForm, subprojectId);
+            taskService.createTask(taskForm, subprojectId, profileId);
         } catch (IllegalArgumentException e) {
             bindingResult.reject("Error", e.getMessage());
             model.addAttribute("subprojectId", subprojectId);
