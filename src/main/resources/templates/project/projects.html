@@ -1,10 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Projekter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center">
 
+
+<div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-md">
+    <h1 class="text-xl font-medium text-gray-900 mb-1">Projekter</h1>
+
+    <table class="w-full border border-gray-200 rounded-lg mt-4">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="text-left px-4 py-2">Projekt Navn</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="project : ${projects}" class="border-t border-gray-200 hover:bg-gray-50">
+                <td class="px-4 py-2" th:text="${project.title}" th:href="@{/projects/{id}(id=${project.id})}">Projekt Navn</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>
