@@ -1,0 +1,32 @@
+<form th:action="@{/tasks/create}" th:object="${taskform}" method="post">
+
+    <input type="hidden" name="subprojectId" th:value="${subprojectId}"/>
+
+
+    <h1>Opret ny Task</h1>
+
+    <div>
+        <label>Titel: *</label>
+        <input type="text" th:field="*{title}" />
+        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+    </div>
+
+    <div>
+        <label>Beskrivelse:</label>
+        <textarea th:field="*{description}"></textarea>
+    </div>
+
+    <div>
+        <label>Estimerede timer: *</label>
+        <input type="number" step="0.1" th:field="*{estimatedTime}" />
+        <p th:if="${#fields.hasErrors('estimatedTime')}" th:errors="*{estimatedTime}"></p>
+    </div>
+
+    <div>
+        <label>Deadline</label>
+        <input type="date" th:field="*{deadline}" />
+    </div>
+
+    <button type="submit">Opret opgave</button>
+
+</form>

@@ -4,14 +4,12 @@ package com.kodebutikken.pct.controller;
 import com.kodebutikken.pct.dto.TaskForm;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.service.TaskService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/tasks")
@@ -23,7 +21,7 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    public String createTask(@Valid @ModelAttribute("taskform")TaskForm taskForm, BindingResult bindingResult, @RequestParam int subprojectId, Model model) {
+    public String createTask(@Valid @ModelAttribute("taskform")TaskForm taskForm, BindingResult bindingResult, @RequestParam int subprojectId, Model model, HttpSession session) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("subprojectId", subprojectId);
             return "task/create";
@@ -40,5 +38,15 @@ public class TaskController {
         }
 
         return "redirect:/subprojects/" + subprojectId + "/tasks";
+    }
+
+    @GetMapping("/create")
+    public String showCreateTaskForm(@RequestParam int subprojectId, Model model, HttpSession session) {
+        if(session.getAttribute("profileId") == null) {
+            return "redirect:/profile/login";
+        }
+        model.addAttribute("taskform", new TaskForm());
+        model.addAttribute("subprojectId", subprojectId);
+        return "task/create";
     }
 }
