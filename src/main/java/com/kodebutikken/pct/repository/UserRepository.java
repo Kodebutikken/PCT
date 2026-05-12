@@ -14,7 +14,7 @@ public class UserRepository {
     }
 
     public void createUser(User user) {
-        String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getPasswordHash(), user.getRole().name());
     }
 

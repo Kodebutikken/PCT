@@ -1,9 +1,13 @@
 package com.kodebutikken.pct.controller;
 
 
+import com.kodebutikken.pct.dto.TaskForm;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +23,20 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    public String createTask(@ModelAttribute Task task, @RequestParam int subprojectId) {
-        task.setSubprojectId(subprojectId);
-        taskService.createTask(task);
-        return "redirect:/subprojects/" + subprojectId;
+    public String createTask(@Valid @ModelAttribute("taskform")TaskForm taskForm, BindingResult bindingResult, @RequestParam int subprojectId, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("subprojectId", subprojectId);
+            return "task/create";
+        }
+
+        try {
+            taskService.createTask(taskForm, subprojectId);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("Error", e.getMessage());
+            model.addAttribute("subprojectId", subprojectId);
+            return "task/create";
+        }
+
+        return "redirect:/subprojects/" + subprojectId + "/tasks";
     }
 }

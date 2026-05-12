@@ -23,4 +23,8 @@ public class SubprojectService {
     public List<Subproject> getAllProjects(int projectId) {
         return subprojectRepository.getSubprojectsByProjectId(projectId);
     }
+
+    public boolean existsById(int id) {
+        return subprojectRepository.existsById(id);
+    }
 }

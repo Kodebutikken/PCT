@@ -31,4 +31,10 @@ public class SubprojectRepository {
                 rs.getTimestamp("created_at").toLocalDateTime()
         ), projectId);
     }
+
+    public boolean existsById(int id) {
+        String sql = "SELECT COUNT(*) FROM subproject WHERE ID = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+        return count != null && count > 0;
+    }
 }
