@@ -1,8 +1,11 @@
 package com.kodebutikken.pct.controller;
 
 
+import com.kodebutikken.pct.dto.LoginForm;
 import com.kodebutikken.pct.dto.RegisterForm;
+import com.kodebutikken.pct.model.User;
 import com.kodebutikken.pct.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,9 +38,39 @@ public class UserController {
         try {
             userService.register(registerForm);
         } catch (IllegalArgumentException e) {
-            model.addAttribute("Error", e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "auth/register";
         }
-        return "redirect:/profile/login";
+        return "redirect:/users/login";
+    }
+
+    @GetMapping("/login")
+    public String showLogin(Model model) {
+        model.addAttribute("loginForm", new LoginForm());
+        return "auth/login";
+    }
+
+    @PostMapping("/login")
+    public String login(@Valid @ModelAttribute LoginForm loginForm,
+                        BindingResult bindingResult,
+                        Model model,
+                        HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            return "auth/login";
+        }
+        User user = userService.authenticate(loginForm);
+        if (user == null) {
+            model.addAttribute("error", "Forkert brugernavn eller adgangskode");
+            return "auth/login";
+        } else {
+            session.setAttribute("userId", user.getId());
+            return "redirect:/projects";
+        }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/users/login";
     }
 }

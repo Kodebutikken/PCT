@@ -28,11 +28,11 @@ public class ProjectController {
 
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
-        if (session.getAttribute("profileId") == null) {
+        if (session.getAttribute("userId") == null) {
             return "redirect:/profile/login";
         }
 
-        List<Project> projects = projectService.getProjectsByProfileId((int) session.getAttribute("profileId"));
+        List<Project> projects = projectService.getProjectsByUserId((int) session.getAttribute("userId"));
         model.addAttribute("projects", projects);
 
         return "project/projects";
@@ -40,7 +40,7 @@ public class ProjectController {
 
     @GetMapping("/create")
     public String showCreateProjectForm(HttpSession session, Model model) {
-        if (session.getAttribute("profileId") == null) {
+        if (session.getAttribute("userId") == null) {
             return "redirect:/profile/login";
         }
 
@@ -55,12 +55,12 @@ public class ProjectController {
             BindingResult bindingResult,
             HttpSession session) {
 
-        if (session.getAttribute("profileId") == null) {
+        if (session.getAttribute("userId") == null) {
             return "redirect:/profile/login";
         }
 
         Role role = (Role) session.getAttribute("role");
-        if (role == null || role != Role.PROJECT_MANAGER) {
+        if (role != Role.PROJECT_MANAGER) {
             return "redirect:/access-denied";
         }
 
@@ -68,10 +68,10 @@ public class ProjectController {
             return "project/create";
         }
 
-        int profileId = (int) session.getAttribute("profileId");
+        int userId = (int) session.getAttribute("userId");
 
         try {
-            projectService.createProject(projectForm, profileId);
+            projectService.createProject(projectForm, userId);
         } catch (IllegalArgumentException e) {
             bindingResult.reject("globalError", e.getMessage());
             return "project/create";

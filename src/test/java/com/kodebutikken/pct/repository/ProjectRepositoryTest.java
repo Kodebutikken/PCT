@@ -11,6 +11,6 @@ class ProjectRepositoryTest {
     }
 
     @Test
-    void getProjectsByProfileId() {
+    void getProjectsByUserId() {
     }
 }
