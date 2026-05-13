@@ -31,7 +31,7 @@ public class ProjectRepository {
                 rs.getInt("created_by")
         ), userId);
     }
-
+  
     public Project getProjectById(int projectId) {
         String sql = "SELECT * FROM project WHERE id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Project(
