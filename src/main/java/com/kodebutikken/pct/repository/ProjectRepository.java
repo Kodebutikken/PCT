@@ -31,6 +31,17 @@ public class ProjectRepository {
                 rs.getInt("created_by")
         ), userId);
     }
+  
+    public Project getProjectById(int projectId) {
+        String sql = "SELECT * FROM project WHERE id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Project(
+                rs.getInt("id"),
+                rs.getString("title"),
+                rs.getString("description"),
+                rs.getDate("created_at").toLocalDate(),
+                rs.getInt("created_by")
+        ), projectId).stream().findFirst().orElse(null);
+    }
 
     public void delete(int id, int userId) {
         String sql = "DELETE FROM project WHERE id = ? AND created_by = ?";
