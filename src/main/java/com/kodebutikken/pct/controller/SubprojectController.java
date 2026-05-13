@@ -92,16 +92,15 @@ public class SubprojectController {
 
         try {subprojectService.createSubproject(id, subprojectForm);
         } catch (IllegalArgumentException e) {
-            bindingResult.reject("globalError", e.getMessage());
+            bindingResult.reject("Error", e.getMessage());
             model.addAttribute("projectId", id);
             return "subproject/create";
         }
         return "redirect:/projects/" + id + "/subprojects";
     }
 
-    @GetMapping("/{id}/tasks")
+    @GetMapping("/subprojects/{id}/tasks")
     public String getTasksBySubproject(@PathVariable int id, Model model) {
-
         List<Task> tasks = taskService.getTasksBySubprojectId(id);
         model.addAttribute("tasks", tasks);
         model.addAttribute("subprojectId", id);
