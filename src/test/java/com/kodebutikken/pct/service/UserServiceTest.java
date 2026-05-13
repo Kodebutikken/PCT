@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -88,7 +90,7 @@ class UserServiceTest {
         gemt.setEmail("anders@example.com");
         gemt.setPasswordHash(passwordEncoder.encode("password123"));
 
-        when(userRepository.findByEmail("anders@example.com")).thenReturn(gemt);
+        when(userRepository.findByEmail("anders@example.com")).thenReturn(Optional.of(gemt));
 
         LoginForm form = new LoginForm();
         form.setEmail("anders@example.com");
@@ -106,7 +108,7 @@ class UserServiceTest {
         gemt.setEmail("anders@example.com");
         gemt.setPasswordHash(passwordEncoder.encode("rigtig123"));
 
-        when(userRepository.findByEmail("anders@example.com")).thenReturn(gemt);
+        when(userRepository.findByEmail("anders@example.com")).thenReturn(Optional.of(gemt));
 
         LoginForm form = new LoginForm();
         form.setEmail("anders@example.com");
@@ -119,7 +121,7 @@ class UserServiceTest {
 
     @Test
     void authenticate_returnsNull_whenUserDoesNotExist() {
-        when(userRepository.findByEmail(anyString())).thenReturn(null);
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         LoginForm form = new LoginForm();
         form.setEmail("ingen@example.com");

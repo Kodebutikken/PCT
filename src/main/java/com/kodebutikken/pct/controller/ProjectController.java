@@ -30,7 +30,7 @@ public class ProjectController {
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         List<Project> projects = projectService.getProjectsByUserId((int) session.getAttribute("userId"));
@@ -42,7 +42,7 @@ public class ProjectController {
     @GetMapping("/create")
     public String showCreateProjectForm(HttpSession session, Model model) {
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         model.addAttribute("projectForm", new ProjectForm());
@@ -57,7 +57,7 @@ public class ProjectController {
             HttpSession session) {
 
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         int userId = (int) session.getAttribute("userId");
@@ -85,7 +85,7 @@ public class ProjectController {
     @PostMapping("/{id}/delete")
     public String deleteProject(@PathVariable int id, HttpSession session) {
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         int userId = (int) session.getAttribute("userId");
@@ -100,5 +100,4 @@ public class ProjectController {
 
         return "redirect:/projects";
     }
-
 }

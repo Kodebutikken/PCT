@@ -8,6 +8,8 @@ import com.kodebutikken.pct.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -29,13 +31,15 @@ public class UserService {
         user.setName(registerForm.getName());
         user.setEmail(registerForm.getEmail());
         user.setPasswordHash(hashedPassword);
-        user.setRole(Role.DEVELOPER); // Standardrolle, kan ændres baseret på forretningslogik
+        user.setRole(Role.DEVELOPER);
         userRepository.createUser(user);
     }
 
     public User authenticate(LoginForm loginForm) {
-        User user = userRepository.findByEmail(loginForm.getEmail());
-        if (user != null && passwordEncoder.matches(loginForm.getPassword(), user.getPasswordHash())) return user;
+        Optional<User> userOptional = userRepository.findByEmail(loginForm.getEmail());
+        if (userOptional.isEmpty()) return null;
+        User user = userOptional.get();
+        if (passwordEncoder.matches(loginForm.getPassword(), user.getPasswordHash())) return user;
         return null;
     }
 
