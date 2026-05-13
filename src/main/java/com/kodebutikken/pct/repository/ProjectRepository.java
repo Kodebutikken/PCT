@@ -31,4 +31,9 @@ public class ProjectRepository {
                 rs.getInt("created_by")
         ), userId);
     }
+
+    public void delete(int id, int userId) {
+        String sql = "DELETE FROM project WHERE id = ? AND created_by = ?";
+        jdbcTemplate.update(sql, id, userId);
+    }
 }
