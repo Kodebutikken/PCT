@@ -4,38 +4,50 @@
     <meta charset="UTF-8">
     <title>Opret projekt</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/styles.css}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 </head>
-<body>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center">
 
 <main>
-    <div>
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-s">
         <h1>Opret nyt projekt</h1>
-
         <form th:action="@{/projects/create}" th:object="${projectForm}" method="post">
+            <div class="mb-4">
+                <label for="name" class="block text-sm text-gray-500 mb-1">Projekt titel: *</label>
+                <input type="text" id="name" th:field="*{title}" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300" />
+                <p th:if="${#fields.hasErrors('title')}"
+                   th:errors="*{title}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
 
-            <div class="form-group">
-                <label for="name">Projekt titel: *</label>
-                <input type="text" id="name" th:field="*{title}" required>
+            <div class="mb-4">
+                <label for="description" class="block text-sm text-gray-500 mb-1">Beskrivelse:</label>
+                <textarea id="description" th:field="*{description}" rows="4" maxlength="500"
+                          class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+                <p th:if="${#fields.hasErrors('description')}"
+                   th:errors="*{description}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <div class="mb-6">
+                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline: *</label>
+                <input type="date" id="deadline" th:field="*{deadline}" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300" />
+                <p th:if="${#fields.hasErrors('deadline')}"
+                   th:errors="*{deadline}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
             </div>
 
             <div class="form-group">
-                <label for="description">Beskrivelse:</label>
-                <textarea id="description" th:field="*{description}" rows="4" maxlength="500"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="deadline">Deadline: *</label>
-                <input type="date" id="deadline" th:field="*{deadline}" required>
-            </div>
-
-            <div class="form-group">
-                <button class="btn-link-primary" type="submit">Opret projekt</button>
-                <button class="btn-link-secondary" type="button" onclick="window.history.back()">Annuller</button>
+                <button class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition" type="submit">Opret projekt</button>
+                <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition" type="button" onclick="window.history.back()">Annuller</button>
                 <small> Felter markeret med * er påkrævet</small>
             </div>
-
         </form>
     </div>
 </main>

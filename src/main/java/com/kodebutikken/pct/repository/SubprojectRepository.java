@@ -16,15 +16,15 @@ public class SubprojectRepository {
     }
 
     public void createSubproject(Subproject subproject) {
-        String sql = "INSERT INTO subproject (titel, description, deadline, project_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, subproject.getTitel(), subproject.getDescription(), subproject.getDeadline(), subproject.getProjectId());
+        String sql = "INSERT INTO subproject (title, description, deadline, project_id) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, subproject.getTitle(), subproject.getDescription(), subproject.getDeadline(), subproject.getProjectId());
     }
 
     public List<Subproject> getSubprojectsByProjectId(int projectId) {
         String sql = "SELECT * FROM subproject WHERE project_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Subproject(
                 rs.getInt("id"),
-                rs.getString("titel"),
+                rs.getString("title"),
                 rs.getString("description"),
                 rs.getDate("deadline").toLocalDate(),
                 rs.getInt("project_id"),

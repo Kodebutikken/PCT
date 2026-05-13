@@ -33,7 +33,7 @@ public class SubprojectController {
     @GetMapping("/{id}/subprojects")
     public String showSubprojects(@PathVariable int id, HttpSession session, Model model) {
         if (session.getAttribute("profileId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
         List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
         model.addAttribute("subprojects", subprojects);
@@ -44,7 +44,7 @@ public class SubprojectController {
     @GetMapping("/{id}/subprojects/create")
     public String showCreateSubprojectForm(@PathVariable int id, HttpSession session, Model model) {
         if (session.getAttribute("profileId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
         model.addAttribute("subprojectForm", new SubprojectForm());
         model.addAttribute("projectId", id);
@@ -54,7 +54,7 @@ public class SubprojectController {
     @PostMapping("/{id}/subprojects/create")
     public String createSubproject(@PathVariable int id, @ModelAttribute SubprojectForm subprojectForm, HttpSession session) {
         if (session.getAttribute("profileId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
         subprojectService.createSubproject(id, subprojectForm);
         return "redirect:/projects/" + id + "/subprojects";
