@@ -3,6 +3,7 @@ package com.kodebutikken.pct.service;
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.repository.ProjectRepository;
+import com.kodebutikken.pct.repository.SubprojectRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +12,10 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final SubprojectRepository subprojectRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, SubprojectRepository subprojectRepository) {
+        this.subprojectRepository = subprojectRepository;
         this.projectRepository = projectRepository;
     }
 
@@ -35,9 +38,15 @@ public class ProjectService {
     }
 
     public List<Project> getProjectsByUserId(int userId) {
-        // Implementer logikken for at hente alle projekter for en given profil
-        // Brug userId til at filtrere projekterne i databasen
-        return projectRepository.getProjectsByUserId(userId);
+        List<Project> projects = projectRepository.getProjectsByUserId(userId);
+
+        for (Project project : projects) {
+            project.setSubprojects(
+                    subprojectRepository.getSubprojectsByProjectId(project.getId())
+            );
+        }
+
+        return projects;
     }
 
     public boolean isProjectOwner(int projectId, int userId) {
