@@ -15,11 +15,22 @@
         <thead>
             <tr class="bg-gray-100">
                 <th class="text-left px-4 py-2">Projekt Navn</th>
+                <th class="text-left px-4 py-2">Beskrivelse</th>
+                <th class="text-left px-4 py-2">Handlinger</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="project : ${projects}" class="border-t border-gray-200 hover:bg-gray-50">
-                <td class="px-4 py-2" th:text="${project.title}" th:href="@{/projects/{id}(id=${project.id})}">Projekt Navn</td>
+                <td class="px-4 py-2" th:text="${project.title}">Projekt Navn</td>
+                <td class="px-4 py-2" th:text="${project.description}">Projekt Beskrivelse</td>
+                <td class="px-4 py-2">
+                    <a th:href="@{/projects/{id}(id=${project.id})}">
+                    <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                        Se Detaljer
+                    </button>
+                    </a>
+                    <a th
+                </td>
             </tr>
         </tbody>
     </table>
