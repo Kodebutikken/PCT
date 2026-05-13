@@ -21,8 +21,8 @@ public class ProjectService {
         // Brug userId til at knytte projektet til den rigtige profil
         // Du kan bruge en repository eller DAO til at håndtere databaseoperationerne
 
-        if(projectForm.getDeadline() != null && projectForm.getDeadline().isBefore(java.time.LocalDate.now())) {
-            throw new IllegalArgumentException("Deadline must be a future date");
+        if(!isValidProjectForm(projectForm)) {
+            throw new IllegalArgumentException("Invalid project form data");
         }
 
         Project project = new Project();
@@ -35,8 +35,28 @@ public class ProjectService {
     }
 
     public List<Project> getProjectsByUserId(int userId) {
-        // Implementer logikken for at hente alle projekter for en given profil
-        // Brug userId til at filtrere projekterne i databasen
+
         return projectRepository.getProjectsByUserId(userId);
+    }
+
+    public void deleteProject(int id, int userId) {
+
+        if(!isProjectOwner(id, userId)) {
+            throw new IllegalArgumentException("User does not have permission to delete this project");
+        }
+        projectRepository.delete(id, userId);
+    }
+
+
+    private boolean isValidProjectForm(ProjectForm projectForm) {
+        if (projectForm.getTitle() == null || projectForm.getTitle().isEmpty()) {
+            return false;
+        }
+        return projectForm.getDeadline() == null || !projectForm.getDeadline().isBefore(java.time.LocalDate.now());
+    }
+
+    private boolean isProjectOwner(int projectId, int userId) {
+        List<Project> projects = projectRepository.getProjectsByUserId(userId);
+        return projects.stream().anyMatch(project -> project.getId() == projectId);
     }
 }
