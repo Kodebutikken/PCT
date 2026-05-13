@@ -1,5 +1,6 @@
 package com.kodebutikken.pct.controller;
 
+import com.kodebutikken.pct.dto.SubprojectForm;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.service.SubprojectService;
@@ -34,7 +35,7 @@ public class SubprojectController {
         if (session.getAttribute("profileId") == null) {
             return "redirect:/profile/login";
         }
-        List<Subproject> subprojects = subprojectService.getAllProjects(id);
+        List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
         model.addAttribute("subprojects", subprojects);
         model.addAttribute("projectId", id);
         return "subproject/index";
@@ -45,17 +46,17 @@ public class SubprojectController {
         if (session.getAttribute("profileId") == null) {
             return "redirect:/profile/login";
         }
-        model.addAttribute("subproject", new Subproject());
+        model.addAttribute("subprojectForm", new SubprojectForm());
         model.addAttribute("projectId", id);
         return "subproject/create";
     }
 
     @PostMapping("/{id}/subprojects/create")
-    public String createSubproject(@PathVariable int id, @ModelAttribute Subproject subproject, HttpSession session) {
+    public String createSubproject(@PathVariable int id, @ModelAttribute SubprojectForm subprojectForm, HttpSession session) {
         if (session.getAttribute("profileId") == null) {
             return "redirect:/profile/login";
         }
-        subprojectService.createSubproject(id, subproject);
+        subprojectService.createSubproject(id, subprojectForm);
         return "redirect:/projects/" + id + "/subprojects";
     }
 
