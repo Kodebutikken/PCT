@@ -4,6 +4,7 @@ import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,17 +18,20 @@ public class ProjectService {
     }
 
     public void createProject(ProjectForm projectForm, int userId) {
-        // Implementer logikken for at oprette et projekt i databasen
-        // Brug userId til at knytte projektet til den rigtige profil
-        // Du kan bruge en repository eller DAO til at håndtere databaseoperationerne
 
-        if(!isValidProjectForm(projectForm)) {
-            throw new IllegalArgumentException("Invalid project form data");
+        if(projectForm == null) {
+            throw new IllegalArgumentException("Project form cannot be null");
+        }
+
+        String validationError = isValidProjectForm(projectForm);
+
+        if(validationError != null) {
+            throw new IllegalArgumentException(validationError);
         }
 
         Project project = new Project();
-        project.setTitle(projectForm.getTitle());
-        project.setDescription(projectForm.getDescription());
+        project.setTitle(projectForm.getTitle().trim());
+        project.setDescription(projectForm.getDescription() != null ? projectForm.getDescription().trim() : null);
         project.setDeadline(projectForm.getDeadline());
         project.setCreatedBy(userId);
 
@@ -39,8 +43,8 @@ public class ProjectService {
         return projectRepository.getProjectsByUserId(userId);
     }
 
+    @Transactional
     public void deleteProject(int id, int userId) {
-
         if(!isProjectOwner(id, userId)) {
             throw new IllegalArgumentException("User does not have permission to delete this project");
         }
@@ -48,15 +52,25 @@ public class ProjectService {
     }
 
 
-    private boolean isValidProjectForm(ProjectForm projectForm) {
-        if (projectForm.getTitle() == null || projectForm.getTitle().isEmpty()) {
-            return false;
+    private String isValidProjectForm(ProjectForm projectForm) {
+        String title = projectForm.getTitle();
+
+        if (title == null || title.trim().isEmpty()) {
+            return "Projektet skal have en titel";
         }
-        return projectForm.getDeadline() == null || !projectForm.getDeadline().isBefore(java.time.LocalDate.now());
+
+        if(projectForm.getDeadline() == null) {
+            return "Deadline er påkrævet";
+        }
+
+        if(projectForm.getDeadline().isBefore(java.time.LocalDate.now())) {;
+            return "Deadline skal være en fremtidig dato";
+        }
+
+        return null;
     }
 
     private boolean isProjectOwner(int projectId, int userId) {
-        List<Project> projects = projectRepository.getProjectsByUserId(userId);
-        return projects.stream().anyMatch(project -> project.getId() == projectId);
+        return projectRepository.isProjectOwner(projectId, userId);
     }
 }
