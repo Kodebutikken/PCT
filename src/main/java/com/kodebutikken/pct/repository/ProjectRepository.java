@@ -42,4 +42,10 @@ public class ProjectRepository {
                 rs.getInt("created_by")
         ), projectId).stream().findFirst().orElse(null);
     }
+
+    public boolean isProjectOwner(int projectId, int userId) {
+        String sql = "SELECT COUNT(*) FROM project WHERE id = ? AND created_by = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, projectId, userId);
+        return count != null && count > 0;
+    }
 }

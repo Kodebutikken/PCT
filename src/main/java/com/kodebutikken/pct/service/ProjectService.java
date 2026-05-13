@@ -39,4 +39,10 @@ public class ProjectService {
         // Brug userId til at filtrere projekterne i databasen
         return projectRepository.getProjectsByUserId(userId);
     }
+
+    public boolean isProjectOwner(int projectId, int userId) {
+        // Implementer logikken for at tjekke om en given profil er ejer af et projekt
+        // Brug projectId og userId til at verificere ejerskabet i databasen
+        return projectRepository.isProjectOwner(projectId, userId);
+    }
 }
