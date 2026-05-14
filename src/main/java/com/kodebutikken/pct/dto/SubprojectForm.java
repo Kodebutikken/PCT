@@ -9,24 +9,16 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 public class SubprojectForm {
-
-    @Getter
-    @Setter
-
-    @NotBlank(message = "Subproject title is required")
+    @NotBlank(message = "Subprojekt titel må ikke være tom!")
     private String title;
-
-    @Getter
-    @Setter
 
     private String description;
 
-    @Getter
-    @Setter
-
-    @NotNull(message = "Deadline is required")
-    @Future(message = "Deadline must be a future date")
+    @NotNull(message = "En deadline er påkrævet!")
+    @Future(message = "Deadlinen skal være en fremtidig dato")
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate deadline;
 }

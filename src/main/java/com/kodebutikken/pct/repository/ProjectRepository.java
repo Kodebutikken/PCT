@@ -1,6 +1,8 @@
 package com.kodebutikken.pct.repository;
 
+import com.kodebutikken.pct.exception.DatabaseOperationException;
 import com.kodebutikken.pct.model.Project;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +18,13 @@ public class ProjectRepository {
     }
 
     public void save(Project project, int userId) {
-        String sql = "INSERT INTO project (title, description, deadline, created_by) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, project.getTitle(), project.getDescription(), project.getDeadline(), userId);
+        try {
+            String sql = "INSERT INTO project (title, description, deadline, created_by) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, project.getTitle(), project.getDescription(), project.getDeadline(), userId);
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
+
 
     }
 
@@ -43,9 +50,14 @@ public class ProjectRepository {
         ), projectId).stream().findFirst().orElse(null);
     }
 
+    public void delete(int id, int userId) {
+        String sql = "DELETE FROM project WHERE id = ? AND created_by = ?";
+        jdbcTemplate.update(sql, id, userId);
+    }
+
     public boolean isProjectOwner(int projectId, int userId) {
-        String sql = "SELECT COUNT(*) FROM project WHERE id = ? AND created_by = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, projectId, userId);
-        return count != null && count > 0;
+        String sql = "SELECT created_by FROM project WHERE id = ?";
+        Integer ownerId = jdbcTemplate.queryForObject(sql, Integer.class, projectId);
+        return ownerId != null && ownerId == userId;
     }
 }

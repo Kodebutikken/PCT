@@ -63,6 +63,19 @@ class ProjectServiceTest {
     }
 
     @Test
+    void createProject_shouldThrowException_whenTitleIsWhitespace() {
+        ProjectForm projectForm = new ProjectForm();
+        projectForm.setTitle("   ");
+        projectForm.setDeadline(LocalDate.now().plusDays(1));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            projectService.createProject(projectForm, 1);
+        });
+
+        verify(projectRepository, never()).save(any(), anyInt());
+    }
+
+    @Test
     void getProjectsByUserId() {
         List<Project> mockProjects = List.of(
                 new Project(1, "Project 1", "Description 1", LocalDate.now().plusDays(5), 1),
@@ -79,4 +92,32 @@ class ProjectServiceTest {
 
         verify(projectRepository).getProjectsByUserId(1);
     }
+
+    @Test
+    void deleteProject_shouldDeleteProject_whenUserIsOwner() {
+        int projectId = 1;
+        int userId = 1;
+
+        when(projectRepository.isProjectOwner(projectId, userId)).thenReturn(true);
+
+        projectService.deleteProject(projectId, userId);
+
+        verify(projectRepository).delete(projectId, userId);
+    }
+
+    @Test
+    void deleteProject_shouldThrowException_whenUserIsNotOwner() {
+        int projectId = 1;
+        int userId = 2;
+
+        when(projectRepository.isProjectOwner(projectId, userId)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            projectService.deleteProject(projectId, userId);
+        });
+
+        verify(projectRepository, never()).delete(anyInt(), anyInt());
+    }
+
+
 }

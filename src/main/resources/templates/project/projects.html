@@ -1,34 +1,48 @@
-<h1>Dine projekter</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Projekter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center">
 
-<div th:each="project : ${projects}" style="margin-bottom: 30px;">
 
-    <div style="border: 2px solid black; padding: 10px;">
-        <h2 th:text="${project.title}"></h2>
-        <p th:text="${project.description}"></p>
+<div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-md">
+    <h1 class="text-xl font-medium text-gray-900 mb-1">Projekter</h1>
 
-        <a th:href="@{'/subprojects/' + ${project.id} + '/subprojects/create'}">
-            + Opret delprojekt
-        </a>
-    </div>
-
-    <div style="margin-left: 30px; margin-top: 10px;">
-        <h4>Delprojekter</h4>
-
-        <div th:if="${#lists.isEmpty(project.subprojects)}">
-            <em>Ingen delprojekter</em>
-        </div>
-
-        <ul th:each="sp : ${project.subprojects}">
-            <li style="border-left: 3px solid #666; padding-left: 10px; margin-bottom: 5px;">
-                <strong th:text="${sp.title}"></strong>
-                <p th:text="${sp.description}"></p>
-                <small th:text="${sp.deadline}"></small>
-
-                <a th:href="@{'/subprojects/' + ${sp.id} + '/tasks'}">
-                    Se tasks
-                </a>
-            </li>
-        </ul>
-    </div>
-
+    <table class="w-full border border-gray-200 rounded-lg mt-4">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="text-left px-4 py-2">Projekt Navn</th>
+                <th class="text-left px-4 py-2">Beskrivelse</th>
+                <th class="text-left px-4 py-2">Handlinger</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="project : ${projects}" class="border-t border-gray-200 hover:bg-gray-50">
+                <td class="px-4 py-2" th:text="${project.title}">Projekt Navn</td>
+                <td class="px-4 py-2" th:text="${project.description}">Projekt Beskrivelse</td>
+                <td class="px-4 py-2">
+                    <a th:href="@{/projects/{id}(id=${project.id})}">
+                    <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                        Se Detaljer
+                    </button>
+                    </a>
+                    <form th:action="@{|/projects/${project.id}/delete|}" method="post" style="display: inline;" onsubmit="return confirm('Er du sikker på, at du vil slette dette projekt?');">
+                    <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-2" type="submit">
+                        Slet
+                    </button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/projects/create}">
+    <button class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        Opret Nyt Projekt
+    </button>
+    </a>
 </div>
+</body>
+</html>

@@ -16,7 +16,7 @@ public class SubprojectRepository {
     }
 
     public void createSubproject(Subproject subproject) {
-        String sql = "INSERT INTO subproject (titel, description, deadline, project_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO subproject (title, description, deadline, project_id) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, subproject.getTitle(), subproject.getDescription(), subproject.getDeadline(), subproject.getProjectId());
     }
 

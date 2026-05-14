@@ -7,6 +7,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -36,9 +39,10 @@ public class UserRepository {
         return count != null && count > 0;
     }
 
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         String sql = "SELECT * FROM user WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, userRowMapper, email);
+        List<User> users = jdbcTemplate.query(sql, userRowMapper, email);
+        return users.stream().findFirst();
     }
 
     public User findById(int userId) {

@@ -26,7 +26,7 @@ CREATE TABLE project
 CREATE TABLE IF NOT EXISTS subproject
 (
     id          INTEGER AUTO_INCREMENT PRIMARY KEY,
-    titel       VARCHAR(255) NOT NULL,
+    title       VARCHAR(255) NOT NULL,
     description TEXT,
     deadline    DATE,
     project_id  INTEGER      NOT NULL,

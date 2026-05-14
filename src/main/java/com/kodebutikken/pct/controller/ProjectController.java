@@ -11,10 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,7 +30,7 @@ public class ProjectController {
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         List<Project> projects = projectService.getProjectsByUserId((int) session.getAttribute("userId"));
@@ -45,7 +42,7 @@ public class ProjectController {
     @GetMapping("/create")
     public String showCreateProjectForm(HttpSession session, Model model) {
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         model.addAttribute("projectForm", new ProjectForm());
@@ -60,7 +57,7 @@ public class ProjectController {
             HttpSession session) {
 
         if (session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
 
         int userId = (int) session.getAttribute("userId");
@@ -85,4 +82,22 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
+    @PostMapping("/{id}/delete")
+    public String deleteProject(@PathVariable int id, HttpSession session) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/users/login";
+        }
+
+        int userId = (int) session.getAttribute("userId");
+
+        User user = userService.getUserById(userId);
+
+        if (user.getRole() != Role.PROJECT_MANAGER) {
+            return "redirect:/access-denied";
+        }
+
+        projectService.deleteProject(id, userId);
+
+        return "redirect:/projects";
+    }
 }
