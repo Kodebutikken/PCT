@@ -63,7 +63,7 @@ public class ProjectService {
             return "Deadline er påkrævet";
         }
 
-        if(projectForm.getDeadline().isBefore(java.time.LocalDate.now())) {;
+        if(projectForm.getDeadline().isBefore(java.time.LocalDate.now())) {
             return "Deadline skal være en fremtidig dato";
         }
 

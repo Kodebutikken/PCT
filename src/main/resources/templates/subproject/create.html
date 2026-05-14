@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Opret delprojekt</title>
+</head>
+<body>
+
+<div style="margin-bottom: 20px; padding: 10px; border-bottom: 2px solid black;">
+    <h2>Opret delprojekt</h2>
+
+    <p>
+        Under projekt:
+        <strong th:text="${project.title}"></strong>
+    </p>
+</div>
+
+<form th:action="@{'/subprojects/' + ${projectId} + '/subprojects/create'}"
+      th:object="${subprojectForm}"
+      method="post">
+
+    <div>
+        <label>Titel *</label>
+        <input type="text" th:field="*{title}" required />
+    </div>
+
+    <div>
+        <label>Beskrivelse</label>
+        <textarea th:field="*{description}"></textarea>
+    </div>
+
+    <div>
+        <label>Deadline</label>
+        <input type="date" th:field="*{deadline}" />
+    </div>
+
+    <button type="submit">Opret</button>
+</form>
+
+<!-- 👇 ekstra sikkerhed / navigation -->
+<div style="margin-top: 20px;">
+    <a th:href="@{'/projects'}">← Til projekter</a>
+</div>
+
+</body>
+</html>
