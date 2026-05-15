@@ -39,12 +39,12 @@ class TaskServiceTest {
         taskForm.setDeadline(LocalDate.now().plusDays(3));
 
         int subprojectId = 1;
-        int profileId = 1;
+        int userId = 1;
 
         when(subprojectService.existsById(subprojectId)).thenReturn(true);
-        when(subprojectService.getProjectOwnerId(subprojectId)).thenReturn(profileId);
+        when(subprojectService.getProjectOwnerId(subprojectId)).thenReturn(userId);
 
-        taskService.createTask(taskForm, subprojectId, profileId);
+        taskService.createTask(taskForm, subprojectId, userId);
 
         ArgumentCaptor<Task> taskCaptor =
                 ArgumentCaptor.forClass(Task.class);

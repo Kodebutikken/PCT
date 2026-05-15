@@ -1,9 +1,12 @@
 package com.kodebutikken.pct.repository;
 
 import com.kodebutikken.pct.exception.DatabaseOperationException;
+import com.kodebutikken.pct.exception.ProjectNotFoundException;
 import com.kodebutikken.pct.model.Project;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +20,14 @@ public class ProjectRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private final RowMapper<Project> projectRowMapper = (rs, rowNum) -> new Project(
+            rs.getInt("id"),
+            rs.getString("title"),
+            rs.getString("description"),
+            rs.getDate("created_at").toLocalDate(),
+            rs.getInt("created_by")
+    );
+
     public void save(Project project, int userId) {
         try {
             String sql = "INSERT INTO project (title, description, deadline, created_by) VALUES (?, ?, ?, ?)";
@@ -24,30 +35,26 @@ public class ProjectRepository {
         } catch (DataAccessException exception) {
             throw new DatabaseOperationException(exception.getMessage());
         }
-
-
     }
 
     public List<Project> getProjectsByUserId(int userId) {
-        String sql = "SELECT * FROM project WHERE created_by = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Project(
-                rs.getInt("id"),
-                rs.getString("title"),
-                rs.getString("description"),
-                rs.getDate("created_at").toLocalDate(),
-                rs.getInt("created_by")
-        ), userId);
+        try {
+            String sql = "SELECT * FROM project WHERE created_by = ?";
+            return jdbcTemplate.query(sql, projectRowMapper, userId);
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
     }
 
     public Project getProjectById(int projectId) {
-        String sql = "SELECT * FROM project WHERE id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Project(
-                rs.getInt("id"),
-                rs.getString("title"),
-                rs.getString("description"),
-                rs.getDate("created_at").toLocalDate(),
-                rs.getInt("created_by")
-        ), projectId).stream().findFirst().orElse(null);
+        try {
+            String sql = "SELECT * FROM project WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, projectRowMapper, projectId);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ProjectNotFoundException("Projekt med id " + projectId + " blev ikke fundet");
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
     }
 
     public void delete(int id, int userId) {

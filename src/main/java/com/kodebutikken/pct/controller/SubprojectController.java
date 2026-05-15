@@ -24,13 +24,11 @@ public class SubprojectController {
     private final SubprojectService subprojectService;
     private final TaskService taskService;
     private final UserService userService;
-    private final ProjectService projectService;
 
-    public SubprojectController(SubprojectService subprojectService, TaskService taskService, UserService userService, ProjectService projectService) {
+    public SubprojectController(SubprojectService subprojectService, TaskService taskService, UserService userService) {
         this.subprojectService = subprojectService;
         this.taskService = taskService;
         this.userService = userService;
-        this.projectService = projectService;
     }
 
     @GetMapping("/{id}/subprojects")
@@ -60,10 +58,6 @@ public class SubprojectController {
             return "redirect:/error";
         }
 
-        if (!projectService.isProjectOwner(id, userId)) {
-            return "redirect:/error";
-        }
-
         model.addAttribute("subprojectForm", new SubprojectForm());
         model.addAttribute("projectId", id);
         return "subproject/create";
@@ -79,10 +73,6 @@ public class SubprojectController {
 
         User user = userService.getUserById(userId);
         if (user.getRole() != Role.PROJECT_MANAGER) {
-            return "redirect:/error";
-        }
-
-        if (!projectService.isProjectOwner(id, userId)) {
             return "redirect:/error";
         }
 

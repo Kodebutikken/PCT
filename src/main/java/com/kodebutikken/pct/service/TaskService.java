@@ -17,7 +17,7 @@ public class TaskService {
         this.subprojectService = subprojectService;
     }
 
-    public void createTask(TaskForm taskForm, int subprojectId, int profileId) {
+    public void createTask(TaskForm taskForm, int subprojectId, int userId) {
         if(!subprojectService.existsById(subprojectId)) {
             throw new IllegalArgumentException("Delprojekt findes ikke");
         }
@@ -34,7 +34,7 @@ public class TaskService {
             throw new IllegalArgumentException("Deadline må ikke være i fortiden");
         }
         Integer ownerId = subprojectService.getProjectOwnerId(subprojectId);
-        if(ownerId == null || ownerId != profileId) {
+        if(ownerId == null || ownerId != userId) {
             throw new IllegalArgumentException("Du har ikke adgang til dette projekt");
         }
 

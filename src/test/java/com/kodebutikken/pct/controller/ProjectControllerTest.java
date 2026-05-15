@@ -40,7 +40,7 @@ class ProjectControllerTest {
 
         when(projectService.getProjectsByUserId(1)).thenReturn(projects);
 
-        mockMvc.perform(get("/projects").sessionAttr("profileId", 1))
+        mockMvc.perform(get("/projects").sessionAttr("userId", 1))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("projects"))
                 .andExpect(model().attribute("projects", projects));
@@ -50,7 +50,7 @@ class ProjectControllerTest {
     @Test
     void createProject_succes() throws Exception{
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("profileId", 1);
+        session.setAttribute("userId", 1);
         session.setAttribute("role", Role.PROJECT_MANAGER);
 
         mockMvc.perform(post("/projects/create")
@@ -72,8 +72,8 @@ class ProjectControllerTest {
     @Test
     void createProject_fail() throws Exception{
         MockHttpSession session = new MockHttpSession();
-        session.setAttribute("profileId", 1);
-        session.setAttribute("role", Role.DEVELOPER); //Developer not allowed to create projects
+        session.setAttribute("userId", 1);
+        session.setAttribute("role", Role.DEVELOPER);
 
         mockMvc.perform(post("/projects/create")
                         .session(session)

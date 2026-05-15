@@ -25,9 +25,7 @@ public class TaskController {
             model.addAttribute("subprojectId", subprojectId);
             return "task/create";
         }
-
         int userId = (int) session.getAttribute("userId");
-
         try {
             taskService.createTask(taskForm, subprojectId, userId);
         } catch (IllegalArgumentException e) {
@@ -42,7 +40,7 @@ public class TaskController {
     @GetMapping("/create")
     public String showCreateTaskForm(@RequestParam int subprojectId, Model model, HttpSession session) {
         if(session.getAttribute("userId") == null) {
-            return "redirect:/profile/login";
+            return "redirect:/users/login";
         }
         model.addAttribute("taskForm", new TaskForm());
         model.addAttribute("subprojectId", subprojectId);
