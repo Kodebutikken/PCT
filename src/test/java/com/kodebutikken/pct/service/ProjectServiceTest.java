@@ -34,19 +34,19 @@ class ProjectServiceTest {
         projectForm.setDescription("This is a test project.");
         projectForm.setDeadline(LocalDate.now().plusDays(7));
 
-        int profileId = 1;
+        int userId = 1;
 
-        projectService.createProject(projectForm, profileId);
+        projectService.createProject(projectForm, userId);
 
         ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
 
-        verify(projectRepository).save(projectCaptor.capture(), eq(profileId));
+        verify(projectRepository).save(projectCaptor.capture(), eq(userId));
 
         Project capturedProject = projectCaptor.getValue();
 
         assertEquals("Test Project", capturedProject.getTitle());
         assertEquals("This is a test project.", capturedProject.getDescription());
-        assertEquals(profileId, capturedProject.getCreatedBy());
+        assertEquals(userId, capturedProject.getCreatedBy());
     }
 
     @Test
