@@ -1,45 +1,63 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
+    <meta charset="UTF-8">
     <title>Opret delprojekt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 </head>
-<body>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center">
+<main>
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-s">
+        <form th:action="@{'/projects/' + ${projectId} + '/subprojects/create'}"
+              th:object="${subprojectForm}"
+              method="post">
+            <div class="grid gap-4 mb-4">
+                <h1>Opret delprojekt</h1>
+                <!--                <p th:text="'Under projektet: ' + ${project.title}"></p>-->
+            </div>
 
-<div style="margin-bottom: 20px; padding: 10px; border-bottom: 2px solid black;">
-    <h2>Opret delprojekt</h2>
+            <div class="mb-4">
+                <label for="title" class="block text-sm text-gray-500 mb-1">Titel *</label>
+                <input id="title" type="text" th:field="*{title}" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
+                <p th:if="${#fields.hasErrors('title')}"
+                   th:errors="*{title}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
 
-    <p>
-        Under projekt:
-        <strong th:text="${project.title}"></strong>
-    </p>
-</div>
+            <div class="mb-4">
+                <label for="description" class="block text-sm text-gray-500 mb-1">Beskrivelse</label>
+                <textarea id="description" th:field="*{description}" rows="4" maxlength="500"
+                          class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+                <p th:if="${#fields.hasErrors('description')}"
+                   th:errors="*{description}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
 
-<form th:action="@{'/subprojects/' + ${projectId} + '/subprojects/create'}"
-      th:object="${subprojectForm}"
-      method="post">
+            <div class="mb-6">
+                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline *</label>
+                <input id="deadline" type="date" th:field="*{deadline}" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
+                <p th:if="${#fields.hasErrors('deadline')}"
+                   th:errors="*{deadline}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
 
-    <div>
-        <label>Titel *</label>
-        <input type="text" th:field="*{title}" required />
+            <div class="form-group">
+                <button class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
+                        type="submit">Opret delprojekt
+                </button>
+                <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition"
+                        type="button" onclick="window.history.back()">Annuller
+                </button>
+            </div>
+        </form>
     </div>
-
-    <div>
-        <label>Beskrivelse</label>
-        <textarea th:field="*{description}"></textarea>
-    </div>
-
-    <div>
-        <label>Deadline</label>
-        <input type="date" th:field="*{deadline}" />
-    </div>
-
-    <button type="submit">Opret</button>
-</form>
-
-<!-- 👇 ekstra sikkerhed / navigation -->
-<div style="margin-top: 20px;">
-    <a th:href="@{'/projects'}">← Til projekter</a>
-</div>
-
+</main>
 </body>
 </html>

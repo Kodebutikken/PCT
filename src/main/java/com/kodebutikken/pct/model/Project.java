@@ -3,8 +3,6 @@ package com.kodebutikken.pct.model;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class Project {
@@ -13,7 +11,6 @@ public class Project {
     private String description;
     private LocalDate deadline;
     private int createdBy;
-    private List<Subproject> subprojects = new ArrayList<>();
 
     public Project () {}
 

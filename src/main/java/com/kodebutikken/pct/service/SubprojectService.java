@@ -11,21 +11,13 @@ import java.util.List;
 
 @Service
 public class SubprojectService {
-
     private final SubprojectRepository subprojectRepository;
-    private final ProjectRepository projectRepository;
 
-    public SubprojectService(SubprojectRepository subprojectRepository, ProjectRepository projectRepository) {
+    public SubprojectService(SubprojectRepository subprojectRepository) {
         this.subprojectRepository = subprojectRepository;
-        this.projectRepository = projectRepository;
     }
 
     public void createSubproject(int projectId, SubprojectForm form) {
-        Project project = projectRepository.getProjectById(projectId);
-        if (project == null) {
-            throw new IllegalArgumentException("Projekt med id " + projectId + " eksisterer ikke");
-        }
-
         Subproject subproject = new Subproject();
         subproject.setTitle(form.getTitle());
         subproject.setDescription(form.getDescription());
@@ -36,11 +28,6 @@ public class SubprojectService {
     }
 
     public List<Subproject> getAllSubProjects(int projectId) {
-        Project project = projectRepository.getProjectById(projectId);
-        if (project == null) {
-            throw new IllegalArgumentException("Projekt med id " + projectId + " eksisterer ikke");
-        }
-
         return subprojectRepository.getSubprojectsByProjectId(projectId);
     }
 

@@ -45,6 +45,10 @@ public class ProjectService {
         return projectRepository.getProjectsByUserId(userId);
     }
 
+    public Project getProjectById(int id) {
+        return projectRepository.getProjectById(id);
+    }
+
     @Transactional
     public void deleteProject(int id, int userId) {
         if(!isProjectOwner(id, userId)) {

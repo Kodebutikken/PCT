@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${project.title} + ' - PCT'">Projekt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50">
+
+<main class="max-w-5xl mx-auto px-4 py-10">
+
+    <!-- Back link -->
+    <a th:href="@{/projects}"
+       class="inline-block text-sm text-gray-500 hover:text-gray-700 hover:underline mb-4">
+        &larr; Alle projekter
+    </a>
+
+    <!-- Page header: title + action buttons -->
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+        <h1 class="text-2xl font-semibold text-gray-900" th:text="${project.title}">Projekttitel</h1>
+        <div class="flex items-center gap-2">
+            <a th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
+                <button type="button"
+                        class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                    Tilføj delprojekt
+                </button>
+            </a>
+            <form th:action="@{/projects/{id}/delete(id=${project.id})}"
+                  method="post"
+                  onsubmit="confirm('Er du sikker på, at du vil slette dette projekt?');">
+                <button type="submit"
+                        class="bg-red-500 text-sm text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                    Slet projekt
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project info card -->
+    <div class="bg-white border border-gray-200 rounded-xl p-8">
+        <h2 class="text-xl font-medium text-gray-900 mb-4">Projektdetaljer</h2>
+
+        <div th:if="${project.description != null and !#strings.isEmpty(project.description)}" class="mb-4">
+            <p class="text-sm text-gray-500 mb-1">Beskrivelse</p>
+            <p class="text-sm text-gray-700" th:text="${project.description}"></p>
+        </div>
+
+        <div class="mb-4">
+            <p class="text-sm text-gray-500 mb-1">Deadline</p>
+            <p class="text-sm text-gray-900 font-medium"
+               th:if="${project.deadline != null}"
+               th:text="${#temporals.format(project.deadline, 'dd/MM-yyyy')}"></p>
+            <p class="text-sm text-gray-400 italic" th:if="${project.deadline == null}">Ingen deadline sat</p>
+        </div>
+
+        <div th:if="${project.createdBy != 0}">
+            <p class="text-sm text-gray-500 mb-1">Oprettet af</p>
+            <p class="text-sm text-gray-900 font-medium" th:text="'Bruger #' + ${project.createdBy}"></p>
+        </div>
+    </div>
+
+    <!-- Statistics bar -->
+    <div class="bg-white border border-gray-200 rounded-xl p-6 mt-4">
+        <div class="flex gap-8">
+            <div class="text-center">
+                <p class="text-2xl font-semibold text-gray-900"
+                   th:text="${#lists.size(subprojects)}">0</p>
+                <p class="text-xs text-gray-500 mt-1">Delprojekter</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subprojects section -->
+    <div class="mt-8">
+        <h2 class="text-xl font-medium text-gray-900 mb-4">Delprojekter</h2>
+
+        <!-- Empty state -->
+        <div th:if="${#lists.isEmpty(subprojects)}"
+             class="bg-white border border-gray-200 rounded-xl p-8 text-center">
+            <p class="text-sm text-gray-500 mb-4">Ingen delprojekter endnu.</p>
+            <a th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
+                <button type="button"
+                        class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                    Opret første delprojekt
+                </button>
+            </a>
+        </div>
+
+        <!-- Subproject grid -->
+        <div th:unless="${#lists.isEmpty(subprojects)}"
+             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div th:each="sub : ${subprojects}"
+                 class="bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-base font-medium text-gray-900 mb-1" th:text="${sub.title}">Titel</h3>
+                    <p th:if="${sub.description != null and !#strings.isEmpty(sub.description)}"
+                       class="text-sm text-gray-500 mb-3 line-clamp-2"
+                       th:text="${sub.description}"></p>
+                    <div th:if="${sub.deadline != null}" class="mb-3">
+                        <p class="text-xs text-gray-500">Deadline</p>
+                        <p class="text-sm text-gray-900 font-medium"
+                           th:text="${#temporals.format(sub.deadline, 'dd/MM-yyyy')}"></p>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-500">Oprettet</p>
+                        <p class="text-xs text-gray-700"
+                           th:text="${#temporals.format(sub.createdAt, 'dd/MM-yyyy')}"></p>
+                    </div>
+                    <a th:href="@{/projects/subprojects/{id}/tasks(id=${sub.id})}">
+                        <button type="button"
+                                class="bg-blue-500 text-sm text-white px-3 py-2 rounded hover:bg-blue-600 transition">
+                            Se opgaver
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>
