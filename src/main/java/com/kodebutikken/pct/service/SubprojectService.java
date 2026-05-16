@@ -1,9 +1,7 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.SubprojectForm;
-import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.Subproject;
-import com.kodebutikken.pct.repository.ProjectRepository;
 import com.kodebutikken.pct.repository.SubprojectRepository;
 import org.springframework.stereotype.Service;
 
