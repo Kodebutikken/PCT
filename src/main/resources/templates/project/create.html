@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Opret projekt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center py-10">
+
+<main>
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-3xl">
+        <h1 class="text-2xl font-semibold">Opret nyt projekt</h1>
+        <p class="mt-1 mb-6 text-sm text-muted-foreground">Felter markeret med * er påkrævet</p>
+        <form th:action="@{/projects/create}" th:object="${projectForm}" method="post">
+            <div class="mb-4">
+                <label for="name" class="block text-sm text-gray-500 mb-1">Projekt titel: *</label>
+                <input type="text" id="name" th:field="*{title}" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
+                <p th:if="${#fields.hasErrors('title')}"
+                   th:errors="*{title}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-sm text-gray-500 mb-1">Beskrivelse:</label>
+                <textarea id="description" th:field="*{description}" rows="4" maxlength="500"
+                          class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+                <p th:if="${#fields.hasErrors('description')}"
+                   th:errors="*{description}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <div class="mb-6">
+                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline: *</label>
+                <input type="date" id="deadline" th:field="*{deadline}" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
+                <p th:if="${#fields.hasErrors('deadline')}"
+                   th:errors="*{deadline}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-lg font-medium mb-3">Projektmedlemmer</h2>
+                <div class="space-y-3">
+                    <div th:each="member, stat : *{members}" class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <input type="hidden" th:field="*{members[__${stat.index}__].userId}"/>
+                        <input type="hidden" th:field="*{members[__${stat.index}__].userName}"/>
+                        <input type="hidden" th:field="*{members[__${stat.index}__].userEmail}"/>
+
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <label class="flex items-center gap-3 text-sm text-gray-800">
+                                <input type="checkbox" th:field="*{members[__${stat.index}__].assigned}"
+                                       class="rounded border-gray-300">
+                                <span>
+                                    <strong th:text="*{members[__${stat.index}__].userName}">Bruger</strong>
+                                    <span class="text-gray-500"
+                                          th:text="'(' + *{members[__${stat.index}__].userEmail} + ')'">(email)</span>
+                                </span>
+                            </label>
+
+                            <select th:field="*{members[__${stat.index}__].accessLevel}"
+                                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                <option value="VIEWER">Viewer</option>
+                                <option value="EDITOR">Editor</option>
+                                <option value="MANAGER">Manager</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${#fields.hasGlobalErrors()}" class="mb-4 text-red-600 text-sm">
+                <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+            </div>
+
+            <div class="form-group">
+                <button class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
+                        type="submit">Opret projekt
+                </button>
+                <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition"
+                        type="button" onclick="window.history.back()">Annuller
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Opgaver</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+
+<main>
+    <h1>Opgaver</h1>
+
+    <a th:href="@{/tasks/create(subprojectId=${subprojectId})}">
+        Opret ny opgave
+    </a>
+
+    <div th:if="${#lists.isEmpty(tasks)}">
+        <p>Ingen opgaver endnu</p>
+    </div>
+
+    <div th:each="task : ${tasks}" class="task-card">
+
+        <h3 th:text="${task.title}">Titel</h3>
+
+        <p>
+            <strong>Estimerede timer:</strong>
+            <span th:text="${task.estimatedHours}"></span>
+        </p>
+
+        <p th:if="${task.deadline != null}">
+            <strong>Deadline:</strong>
+            <span th:text="${task.deadline}"></span>
+        </p>
+
+        <p th:if="${task.deadline == null}">
+            <em>Ingen deadline sat</em>
+        </p>
+
+    </div>
+
+</main>
+
+</body>
+</html>

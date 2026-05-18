@@ -1,0 +1,10 @@
+.error-input {
+    border: 2px solid #e74c3c;
+    background-color: #fff5f5;
+}
+
+.error-text {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
