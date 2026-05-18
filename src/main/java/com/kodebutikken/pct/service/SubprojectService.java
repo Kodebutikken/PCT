@@ -36,4 +36,8 @@ public class SubprojectService {
     public Integer getProjectOwnerId(int subprojectId) {
         return subprojectRepository.getProjectOwnerId(subprojectId);
     }
+
+    public Integer getProjectIdBySubprojectId(int subprojectId) {
+        return subprojectRepository.getProjectIdBySubprojectId(subprojectId);
+    }
 }

@@ -40,7 +40,7 @@
         </tr>
         </tbody>
     </table>
-    <a th:href="@{/projects/create}">
+    <a th:if="${canCreateProjects}" th:href="@{/projects/create}">
         <button class="mt-4 bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
             Opret Nyt Projekt
         </button>

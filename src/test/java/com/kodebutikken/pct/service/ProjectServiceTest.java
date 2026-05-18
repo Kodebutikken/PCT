@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.ProjectForm;
+import com.kodebutikken.pct.exception.UnauthorizedException;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.repository.ProjectRepository;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,12 @@ class ProjectServiceTest {
     @Mock
     private ProjectRepository projectRepository;
 
+    @Mock
+    private ProjectAccessService projectAccessService;
+
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private ProjectService projectService;
 
@@ -35,6 +42,7 @@ class ProjectServiceTest {
         projectForm.setDeadline(LocalDate.now().plusDays(7));
 
         int userId = 1;
+        when(projectAccessService.canCreateProject(userId)).thenReturn(true);
 
         projectService.createProject(projectForm, userId);
 
@@ -76,21 +84,21 @@ class ProjectServiceTest {
     }
 
     @Test
-    void getProjectsByUserId() {
+    void getProjectsAccessibleByUserId() {
         List<Project> mockProjects = List.of(
                 new Project(1, "Project 1", "Description 1", LocalDate.now().plusDays(5), 1),
                 new Project(2, "Project 2", "Description 2", LocalDate.now().plusDays(10), 1)
         );
 
-        when(projectRepository.getProjectsByUserId(1)).thenReturn(mockProjects);
+        when(projectRepository.getProjectsAccessibleByUserId(1)).thenReturn(mockProjects);
 
-        List<Project> result = projectService.getProjectsByUserId(1);
+        List<Project> result = projectService.getProjectsAccessibleByUserId(1);
 
         assertEquals(2, result.size());
         assertEquals("Project 1", result.get(0).getTitle());
         assertEquals("Project 2", result.get(1).getTitle());
 
-        verify(projectRepository).getProjectsByUserId(1);
+        verify(projectRepository).getProjectsAccessibleByUserId(1);
     }
 
     @Test
@@ -98,7 +106,7 @@ class ProjectServiceTest {
         int projectId = 1;
         int userId = 1;
 
-        when(projectRepository.isProjectOwner(projectId, userId)).thenReturn(true);
+        when(projectAccessService.canDeleteProject(projectId, userId)).thenReturn(true);
 
         projectService.deleteProject(projectId, userId);
 
@@ -110,9 +118,9 @@ class ProjectServiceTest {
         int projectId = 1;
         int userId = 2;
 
-        when(projectRepository.isProjectOwner(projectId, userId)).thenReturn(false);
+        when(projectAccessService.canDeleteProject(projectId, userId)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(UnauthorizedException.class, () -> {
             projectService.deleteProject(projectId, userId);
         });
 

@@ -10,23 +10,27 @@
 
 <main class="max-w-5xl mx-auto px-4 py-10">
 
-    <!-- Back link -->
     <a th:href="@{/projects}"
        class="inline-block text-sm text-gray-500 hover:text-gray-700 hover:underline mb-4">
         &larr; Alle projekter
     </a>
 
-    <!-- Page header: title + action buttons -->
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <h1 class="text-2xl font-semibold text-gray-900" th:text="${project.title}">Projekttitel</h1>
         <div class="flex items-center gap-2">
-            <a th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
+            <a th:if="${canEditProject}" th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
                 <button type="button"
                         class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
                     Tilføj delprojekt
                 </button>
             </a>
-            <form th:action="@{/projects/{id}/delete(id=${project.id})}"
+            <a th:if="${canManageProject}" th:href="@{/projects/{id}/edit(id=${project.id})}">
+                <button type="button"
+                        class="bg-yellow-500 text-sm text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+                    Rediger projekt
+                </button>
+            </a>
+            <form th:if="${canDeleteProject}" th:action="@{/projects/{id}/delete(id=${project.id})}"
                   method="post"
                   onsubmit="confirm('Er du sikker på, at du vil slette dette projekt?');">
                 <button type="submit"
@@ -58,9 +62,20 @@
             <p class="text-sm text-gray-500 mb-1">Oprettet af</p>
             <p class="text-sm text-gray-900 font-medium" th:text="'Bruger #' + ${project.createdBy}"></p>
         </div>
+
+        <div class="mt-6">
+            <p class="text-sm text-gray-500 mb-2">Projektmedlemmer</p>
+            <div th:if="${#lists.isEmpty(projectMembers)}" class="text-sm text-gray-400 italic">Ingen medlemmer tildelt endnu</div>
+            <ul th:unless="${#lists.isEmpty(projectMembers)}" class="space-y-2">
+                <li th:each="member : ${projectMembers}" class="text-sm text-gray-700">
+                    <span class="font-medium" th:text="${member.userName}">Navn</span>
+                    <span class="text-gray-500" th:text="'(' + ${member.userEmail} + ')'">(email)</span>
+                    <span class="ml-2 inline-block rounded bg-gray-100 px-2 py-1 text-xs text-gray-700" th:text="${member.accessLevel}">VIEWER</span>
+                </li>
+            </ul>
+        </div>
     </div>
 
-    <!-- Statistics bar -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 mt-4">
         <div class="flex gap-8">
             <div class="text-center">
@@ -71,15 +86,13 @@
         </div>
     </div>
 
-    <!-- Subprojects section -->
     <div class="mt-8">
         <h2 class="text-xl font-medium text-gray-900 mb-4">Delprojekter</h2>
 
-        <!-- Empty state -->
         <div th:if="${#lists.isEmpty(subprojects)}"
              class="bg-white border border-gray-200 rounded-xl p-8 text-center">
             <p class="text-sm text-gray-500 mb-4">Ingen delprojekter endnu.</p>
-            <a th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
+            <a th:if="${canEditProject}" th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
                 <button type="button"
                         class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
                     Opret første delprojekt
@@ -87,7 +100,6 @@
             </a>
         </div>
 
-        <!-- Subproject grid -->
         <div th:unless="${#lists.isEmpty(subprojects)}"
              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div th:each="sub : ${subprojects}"

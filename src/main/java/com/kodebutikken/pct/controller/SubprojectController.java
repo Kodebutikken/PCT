@@ -1,13 +1,11 @@
 package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.SubprojectForm;
-import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.model.Task;
-import com.kodebutikken.pct.model.User;
+import com.kodebutikken.pct.service.ProjectAccessService;
 import com.kodebutikken.pct.service.SubprojectService;
 import com.kodebutikken.pct.service.TaskService;
-import com.kodebutikken.pct.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -22,18 +20,24 @@ import java.util.List;
 public class SubprojectController {
     private final SubprojectService subprojectService;
     private final TaskService taskService;
-    private final UserService userService;
+    private final ProjectAccessService projectAccessService;
 
-    public SubprojectController(SubprojectService subprojectService, TaskService taskService, UserService userService) {
+    public SubprojectController(SubprojectService subprojectService,
+                                TaskService taskService,
+                                ProjectAccessService projectAccessService) {
         this.subprojectService = subprojectService;
         this.taskService = taskService;
-        this.userService = userService;
+        this.projectAccessService = projectAccessService;
     }
 
     @GetMapping("/{id}/subprojects")
     public String showSubprojects(@PathVariable int id, HttpSession session, Model model) {
-        if (session.getAttribute("userId") == null) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
             return "redirect:/users/login";
+        }
+        if (!projectAccessService.canViewProject(id, userId)) {
+            return "redirect:/error";
         }
 
         List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
@@ -48,8 +52,7 @@ public class SubprojectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        User user = userService.getUserById(userId);
-        if (user.getRole() != Role.PROJECT_MANAGER) {
+        if (!projectAccessService.canEditProject(id, userId)) {
             return "redirect:/error";
         }
 
@@ -65,8 +68,7 @@ public class SubprojectController {
             return "redirect:/users/login";
         }
 
-        User user = userService.getUserById(userId);
-        if (user.getRole() != Role.PROJECT_MANAGER) {
+        if (!projectAccessService.canEditProject(id, userId)) {
             return "redirect:/error";
         }
 
@@ -86,7 +88,17 @@ public class SubprojectController {
     }
 
     @GetMapping("/subprojects/{id}/tasks")
-    public String getTasksBySubproject(@PathVariable int id, Model model) {
+    public String getTasksBySubproject(@PathVariable int id, HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
+        if (projectId == null || !projectAccessService.canViewProject(projectId, userId)) {
+            return "redirect:/error";
+        }
+
         List<Task> tasks = taskService.getTasksBySubprojectId(id);
         model.addAttribute("tasks", tasks);
         model.addAttribute("subprojectId", id);

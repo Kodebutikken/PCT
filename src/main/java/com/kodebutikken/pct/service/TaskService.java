@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.TaskForm;
+import com.kodebutikken.pct.exception.UnauthorizedException;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -11,10 +12,14 @@ import java.util.List;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final SubprojectService subprojectService;
+    private final ProjectAccessService projectAccessService;
 
-    public TaskService(TaskRepository taskRepository, SubprojectService subprojectService) {
+    public TaskService(TaskRepository taskRepository,
+                       SubprojectService subprojectService,
+                       ProjectAccessService projectAccessService) {
         this.taskRepository = taskRepository;
         this.subprojectService = subprojectService;
+        this.projectAccessService = projectAccessService;
     }
 
     public void createTask(TaskForm taskForm, int subprojectId, int userId) {
@@ -33,9 +38,9 @@ public class TaskService {
         if(taskForm.getDeadline() != null && taskForm.getDeadline().isBefore(java.time.LocalDate.now())) {
             throw new IllegalArgumentException("Deadline må ikke være i fortiden");
         }
-        Integer ownerId = subprojectService.getProjectOwnerId(subprojectId);
-        if(ownerId == null || ownerId != userId) {
-            throw new IllegalArgumentException("Du har ikke adgang til dette projekt");
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(subprojectId);
+        if(projectId == null || !projectAccessService.canEditProject(projectId, userId)) {
+            throw new UnauthorizedException("Du har ikke adgang til dette projekt");
         }
 
         Task task = new Task();
