@@ -13,7 +13,6 @@ import java.util.List;
 
 @Repository
 public class ProjectRepository {
-
     private final JdbcTemplate jdbcTemplate;
 
     public ProjectRepository(JdbcTemplate jdbcTemplate) {
@@ -24,7 +23,7 @@ public class ProjectRepository {
             rs.getInt("id"),
             rs.getString("title"),
             rs.getString("description"),
-            rs.getDate("created_at").toLocalDate(),
+            rs.getDate("deadline").toLocalDate(),
             rs.getInt("created_by")
     );
 

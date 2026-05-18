@@ -2,7 +2,9 @@ package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
+import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.service.ProjectService;
+import com.kodebutikken.pct.service.SubprojectService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -16,8 +18,11 @@ import java.util.List;
 @RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService projectService;
-    public ProjectController(ProjectService projectService) {
+    private final SubprojectService subprojectService;
+
+    public ProjectController(ProjectService projectService, SubprojectService subprojectService) {
         this.projectService = projectService;
+        this.subprojectService = subprojectService;
     }
 
     @GetMapping()
@@ -58,6 +63,18 @@ public class ProjectController {
             return "project/create";
         }
         return "redirect:/projects";
+    }
+
+    @GetMapping("/{id}")
+    public String showProject(@PathVariable int id, HttpSession session, Model model) {
+        if (session.getAttribute("userId") == null) {
+            return "redirect:/users/login";
+        }
+        Project project = projectService.getProjectById(id);
+        List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
+        model.addAttribute("subprojects", subprojects);
+        model.addAttribute("project", project);
+        return "project/projectPage";
     }
 
     @PostMapping("/{id}/delete")

@@ -11,6 +11,9 @@
         <h1 class="text-xl font-medium text-red-600 mb-1" th:text="${status} + ' - ' + ${error}">500 - Uventet fejl</h1>
         <p class="text-sm text-gray-500 mb-6">Der opstod en fejl, og vi kunne ikke behandle din anmodning.</p>
         <p class="text-sm" th:text="${message}"></p>
+        <div class="mt-6">
+            <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition" type="button" onclick="window.history.back()">Tilbage</button>
+        </div>
     </div>
 </main>
 </body>

@@ -5,7 +5,6 @@ import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.model.User;
-import com.kodebutikken.pct.service.ProjectService;
 import com.kodebutikken.pct.service.SubprojectService;
 import com.kodebutikken.pct.service.TaskService;
 import com.kodebutikken.pct.service.UserService;
@@ -33,9 +32,7 @@ public class SubprojectController {
 
     @GetMapping("/{id}/subprojects")
     public String showSubprojects(@PathVariable int id, HttpSession session, Model model) {
-        Integer userId = (Integer) session.getAttribute("userId");
-
-        if (userId == null) {
+        if (session.getAttribute("userId") == null) {
             return "redirect:/users/login";
         }
 
@@ -48,11 +45,9 @@ public class SubprojectController {
     @GetMapping("/{id}/subprojects/create")
     public String showCreateSubprojectForm(@PathVariable int id, HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
-
         if (userId == null) {
             return "redirect:/users/login";
         }
-
         User user = userService.getUserById(userId);
         if (user.getRole() != Role.PROJECT_MANAGER) {
             return "redirect:/error";
@@ -66,7 +61,6 @@ public class SubprojectController {
     @PostMapping("/{id}/subprojects/create")
     public String createSubproject(@PathVariable int id, @Valid @ModelAttribute("subprojectForm") SubprojectForm subprojectForm, BindingResult bindingResult, HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
-
         if (userId == null) {
             return "redirect:/users/login";
         }
@@ -76,11 +70,13 @@ public class SubprojectController {
             return "redirect:/error";
         }
 
-        if (bindingResult.hasErrors()) {model.addAttribute("projectId", id);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("projectId", id);
             return "subproject/create";
         }
 
-        try {subprojectService.createSubproject(id, subprojectForm);
+        try {
+            subprojectService.createSubproject(id, subprojectForm);
         } catch (IllegalArgumentException e) {
             bindingResult.reject("Error", e.getMessage());
             model.addAttribute("projectId", id);
