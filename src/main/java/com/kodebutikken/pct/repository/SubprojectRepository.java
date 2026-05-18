@@ -50,7 +50,12 @@ public class SubprojectRepository {
     }
 
     public Integer getProjectOwnerId(int subprojectId) {
-        String sql = "SELECT p.created_by FROM project p JOIN subprojects s ON p.id = s.project_id WHERE s.id = ?";
+        String sql = "SELECT p.created_by FROM project p JOIN subproject s ON p.id = s.project_id WHERE s.id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, subprojectId);
+    }
+
+    public Integer getProjectIdBySubprojectId(int subprojectId) {
+        String sql = "SELECT project_id FROM subproject WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, Integer.class, subprojectId);
     }
 }

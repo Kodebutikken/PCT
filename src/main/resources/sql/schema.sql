@@ -23,6 +23,16 @@ CREATE TABLE project
     FOREIGN KEY (created_by) REFERENCES user (id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS project_user
+(
+    project_id INTEGER NOT NULL,
+    user_id    INTEGER NOT NULL,
+    access_level VARCHAR(50) NOT NULL,
+    PRIMARY KEY (project_id, user_id),
+    FOREIGN KEY (project_id) REFERENCES project (id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS subproject
 (
     id          INTEGER AUTO_INCREMENT PRIMARY KEY,

@@ -2,6 +2,8 @@ package com.kodebutikken.pct.controller;
 
 
 import com.kodebutikken.pct.dto.TaskForm;
+import com.kodebutikken.pct.service.ProjectAccessService;
+import com.kodebutikken.pct.service.SubprojectService;
 import com.kodebutikken.pct.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -14,18 +16,34 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
+    private final SubprojectService subprojectService;
+    private final ProjectAccessService projectAccessService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService,
+                          SubprojectService subprojectService,
+                          ProjectAccessService projectAccessService) {
         this.taskService = taskService;
+        this.subprojectService = subprojectService;
+        this.projectAccessService = projectAccessService;
     }
 
     @PostMapping("/create")
     public String createTask(@Valid @ModelAttribute("taskForm")TaskForm taskForm, BindingResult bindingResult, @RequestParam int subprojectId, Model model, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(subprojectId);
+        if (projectId == null || !projectAccessService.canEditProject(projectId, userId)) {
+            return "redirect:/error";
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("subprojectId", subprojectId);
             return "task/create";
         }
-        int userId = (int) session.getAttribute("userId");
+
         try {
             taskService.createTask(taskForm, subprojectId, userId);
         } catch (IllegalArgumentException e) {
@@ -39,9 +57,16 @@ public class TaskController {
 
     @GetMapping("/create")
     public String showCreateTaskForm(@RequestParam int subprojectId, Model model, HttpSession session) {
-        if(session.getAttribute("userId") == null) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if(userId == null) {
             return "redirect:/users/login";
         }
+
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(subprojectId);
+        if (projectId == null || !projectAccessService.canEditProject(projectId, userId)) {
+            return "redirect:/error";
+        }
+
         model.addAttribute("taskForm", new TaskForm());
         model.addAttribute("subprojectId", subprojectId);
         return "task/create";

@@ -3,7 +3,9 @@ package com.kodebutikken.pct.controller;
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.Role;
+import com.kodebutikken.pct.service.ProjectAccessService;
 import com.kodebutikken.pct.service.ProjectService;
+import com.kodebutikken.pct.service.SubprojectService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,12 @@ class ProjectControllerTest {
     @MockitoBean
     private ProjectService projectService;
 
+    @MockitoBean
+    private SubprojectService subprojectService;
+
+    @MockitoBean
+    private ProjectAccessService projectAccessService;
+
     @Test
     void showProjects() throws Exception {
         List<Project> projects = List.of(
@@ -38,7 +46,8 @@ class ProjectControllerTest {
                 new Project(2, "Project 2", "Description 2", LocalDate.now(), 1)
                 );
 
-        when(projectService.getProjectsByUserId(1)).thenReturn(projects);
+        when(projectService.getProjectsAccessibleByUserId(1)).thenReturn(projects);
+        when(projectAccessService.canCreateProject(1)).thenReturn(true);
 
         mockMvc.perform(get("/projects").sessionAttr("userId", 1))
                 .andExpect(status().isOk())
@@ -52,6 +61,8 @@ class ProjectControllerTest {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("userId", 1);
         session.setAttribute("role", Role.PROJECT_MANAGER);
+
+        when(projectAccessService.canCreateProject(1)).thenReturn(true);
 
         mockMvc.perform(post("/projects/create")
                         .session(session)
@@ -75,6 +86,8 @@ class ProjectControllerTest {
         session.setAttribute("userId", 1);
         session.setAttribute("role", Role.DEVELOPER);
 
+        when(projectAccessService.canCreateProject(1)).thenReturn(false);
+
         mockMvc.perform(post("/projects/create")
                         .session(session)
                         .param("title", "New Project")
@@ -82,7 +95,7 @@ class ProjectControllerTest {
                         .param("dueDate", LocalDate.now().plusDays(7).toString()))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/access-denied"));
+                .andExpect(redirectedUrl("/error"));
 
         verify(projectService, never()).createProject(any(ProjectForm.class), anyInt());
 

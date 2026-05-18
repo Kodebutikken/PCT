@@ -49,4 +49,9 @@ public class UserRepository {
         String sql = "SELECT * FROM user WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, userRowMapper, userId);
     }
+
+    public List<User> findAll() {
+        String sql = "SELECT * FROM user ORDER BY name ASC";
+        return jdbcTemplate.query(sql, userRowMapper);
+    }
 }
