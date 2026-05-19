@@ -41,7 +41,6 @@
         </div>
     </div>
 
-    <!-- Project info card -->
     <div class="bg-white border border-gray-200 rounded-xl p-8">
         <h2 class="text-xl font-medium text-gray-900 mb-4">Projektdetaljer</h2>
 
@@ -77,11 +76,19 @@
     </div>
 
     <div class="bg-white border border-gray-200 rounded-xl p-6 mt-4">
-        <div class="flex gap-8">
+        <div class="flex gap-10 justify-center">
             <div class="text-center">
                 <p class="text-2xl font-semibold text-gray-900"
                    th:text="${#lists.size(subprojects)}">0</p>
                 <p class="text-xs text-gray-500 mt-1">Delprojekter</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-semibold text-grey-900">N/A</p>
+                <p class="text-xs text-gray-500 mt-1">Opgaver</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-semibold text-gray-900">N/A</p>
+                <p class="text-xs text-gray-500 mt-1">Timer</p>
             </div>
         </div>
     </div>

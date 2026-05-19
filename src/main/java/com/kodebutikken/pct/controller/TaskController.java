@@ -13,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/tasks")
+@RequestMapping("/projects/subprojects")
 public class TaskController {
     private final TaskService taskService;
     private final SubprojectService subprojectService;
@@ -27,48 +27,55 @@ public class TaskController {
         this.projectAccessService = projectAccessService;
     }
 
-    @PostMapping("/create")
-    public String createTask(@Valid @ModelAttribute("taskForm")TaskForm taskForm, BindingResult bindingResult, @RequestParam int subprojectId, Model model, HttpSession session) {
-        Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/users/login";
-        }
-
-        Integer projectId = subprojectService.getProjectIdBySubprojectId(subprojectId);
-        if (projectId == null || !projectAccessService.canEditProject(projectId, userId)) {
-            return "redirect:/error";
-        }
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("subprojectId", subprojectId);
-            return "task/create";
-        }
-
-        try {
-            taskService.createTask(taskForm, subprojectId, userId);
-        } catch (IllegalArgumentException e) {
-            bindingResult.reject("Error", e.getMessage());
-            model.addAttribute("subprojectId", subprojectId);
-            return "task/create";
-        }
-
-        return "redirect:/subprojects/" + subprojectId + "/tasks";
-    }
-
-    @GetMapping("/create")
-    public String showCreateTaskForm(@RequestParam int subprojectId, Model model, HttpSession session) {
+    @GetMapping("/{id}/tasks/create")
+    public String showCreateTaskForm(@PathVariable int id, Model model, HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
         if(userId == null) {
             return "redirect:/users/login";
         }
 
-        Integer projectId = subprojectService.getProjectIdBySubprojectId(subprojectId);
-        if (projectId == null || !projectAccessService.canEditProject(projectId, userId)) {
-            return "redirect:/error";
-        }
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
+        projectAccessService.requireEditProject(projectId, userId);
 
         model.addAttribute("taskForm", new TaskForm());
-        model.addAttribute("subprojectId", subprojectId);
+        model.addAttribute("subprojectId", id);
         return "task/create";
+    }
+
+    @PostMapping("/{id}/tasks/create")
+    public String createTask(@Valid @ModelAttribute("taskForm")TaskForm taskForm, BindingResult bindingResult, @PathVariable int id, Model model, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
+        projectAccessService.requireEditProject(projectId, userId);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("subprojectId", id);
+            return "task/create";
+        }
+
+        try {
+            taskService.createTask(taskForm, id, userId);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("Error", e.getMessage());
+            model.addAttribute("subprojectId", id);
+            return "task/create";
+        }
+
+        return "redirect:/projects/subprojects/" + id + "/tasks";
+    }
+
+    @PostMapping("/{pid}/task/{tid}/delete")
+    public String deleteTask(@PathVariable int pid, @PathVariable int tid, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+
+        taskService.deleteTask(pid, tid, userId);
+        return "redirect:/projects/subprojects/" + pid + "/tasks";
     }
 }

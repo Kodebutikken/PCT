@@ -27,6 +27,7 @@ public class TaskRepository {
         task.setSubprojectId(rs.getInt("subproject_id"));
         task.setResourceTypeId((Integer) rs.getObject("resource_type_id"));
         task.setResourceId((Integer) rs.getObject("resource_id"));
+        task.setCreatedAt(rs.getDate("created_at").toLocalDate());
         return task;
     };
 
@@ -38,5 +39,10 @@ public class TaskRepository {
     public void createTask(Task task) {
         String sql = "INSERT INTO task (title, description, estimated_hours, deadline, subproject_id, resource_type_id, resource_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, task.getTitle(), task.getDescription(), task.getEstimatedHours(), task.getDeadline(), task.getSubprojectId(), task.getResourceTypeId(), task.getResourceId());
+    }
+
+    public void deleteTask(int pid, int tid) {
+        String sql = "DELETE FROM task WHERE id = ? AND subproject_id = ?";
+        jdbcTemplate.update(sql, tid, pid);
     }
 }

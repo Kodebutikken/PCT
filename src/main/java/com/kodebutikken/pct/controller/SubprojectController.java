@@ -36,9 +36,7 @@ public class SubprojectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canViewProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireViewProject(id, userId);
 
         List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
         model.addAttribute("subprojects", subprojects);
@@ -52,9 +50,7 @@ public class SubprojectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canEditProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireEditProject(id, userId);
 
         model.addAttribute("subprojectForm", new SubprojectForm());
         model.addAttribute("projectId", id);
@@ -67,10 +63,7 @@ public class SubprojectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-
-        if (!projectAccessService.canEditProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireEditProject(id, userId);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("projectId", id);
@@ -95,13 +88,15 @@ public class SubprojectController {
         }
 
         Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
-        if (projectId == null || !projectAccessService.canViewProject(projectId, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireViewProject(projectId, userId);
+        Subproject subproject = subprojectService.getSubprojectById(id);
 
         List<Task> tasks = taskService.getTasksBySubprojectId(id);
         model.addAttribute("tasks", tasks);
-        model.addAttribute("subprojectId", id);
-        return "task/list";
+        model.addAttribute("subproject", subproject);
+        model.addAttribute("canEditProject", projectAccessService.canEditProject(projectId, userId));
+        model.addAttribute("canManageProject", projectAccessService.canManageProject(projectId, userId));
+        model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(projectId, userId));
+        return "subproject/spPage";
     }
 }

@@ -33,11 +33,11 @@ public class ProjectController {
 
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
+        int userId = (int) session.getAttribute("userId");
         if (session.getAttribute("userId") == null) {
             return "redirect:/users/login";
         }
 
-        int userId = (int) session.getAttribute("userId");
         List<Project> projects = projectService.getProjectsAccessibleByUserId(userId);
         model.addAttribute("projects", projects);
         model.addAttribute("canCreateProjects", projectAccessService.canCreateProject(userId));
@@ -50,9 +50,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canCreateProject(userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireCreateProject(userId);
 
         model.addAttribute("projectForm", projectService.buildProjectForm(null, userId));
         model.addAttribute("isEdit", false);
@@ -69,9 +67,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canCreateProject(userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireCreateProject(userId);
         if(bindingResult.hasErrors()) {
             projectService.repopulateProjectMembers(projectForm, userId);
             model.addAttribute("isEdit", false);
@@ -94,9 +90,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canViewProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireViewProject(id, userId);
 
         Project project = projectService.getProjectById(id);
         List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
@@ -116,9 +110,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canManageProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireManageProject(id, userId);
 
         model.addAttribute("projectForm", projectService.buildProjectForm(id, userId));
         model.addAttribute("projectId", id);
@@ -136,9 +128,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canManageProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireEditProject(id, userId);
 
         if(bindingResult.hasErrors()) {
             projectService.repopulateProjectMembers(projectForm, userId);

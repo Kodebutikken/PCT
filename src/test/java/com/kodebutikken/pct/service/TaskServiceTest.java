@@ -142,8 +142,8 @@ class TaskServiceTest {
     @Test
     void getTasksBySubprojectId() {
         List<Task> mockTasks = List.of(
-                new Task(1, "Task 1", "Beskrivelse 1", 5, LocalDate.now().plusDays(2), 1, 0, 0),
-                new Task(2, "Task 2", "Beskrivelse 2", 3, LocalDate.now().plusDays(5), 1, 0, 0));
+                new Task(1, "Task 1", "Beskrivelse 1", 5, LocalDate.now().plusDays(2), 1, 0, 0, LocalDate.now()),
+                new Task(2, "Task 2", "Beskrivelse 2", 3, LocalDate.now().plusDays(5), 1, 0, 0, LocalDate.now()));
         when(taskRepository.getTasksBySubprojectId(1))
                 .thenReturn(mockTasks);
 
