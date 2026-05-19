@@ -43,6 +43,15 @@ public class SubprojectRepository {
         }
     }
 
+    public Subproject getSubprojectById(int id) {
+        try {
+            String sql = "SELECT * FROM subproject WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, subprojectRowMapper, id);
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
+    }
+
     public boolean existsById(int id) {
         String sql = "SELECT COUNT(*) FROM subproject WHERE ID = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);

@@ -2,7 +2,7 @@ package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.dto.ProjectMemberForm;
-import com.kodebutikken.pct.exception.UnauthorizedException;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
 import com.kodebutikken.pct.model.ProjectAccessLevel;
 import com.kodebutikken.pct.model.ProjectMember;
 import com.kodebutikken.pct.model.Project;
@@ -39,9 +39,7 @@ public class ProjectService {
         if(validationError != null) {
             throw new IllegalArgumentException(validationError);
         }
-        if (!projectAccessService.canCreateProject(userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til at oprette projekter");
-        }
+        projectAccessService.requireCreateProject(userId);
 
         Project project = new Project();
         project.setTitle(projectForm.getTitle().trim());
@@ -68,7 +66,7 @@ public class ProjectService {
     @Transactional
     public void updateProject(int projectId, ProjectForm projectForm, int userId) {
         if (!projectAccessService.canManageProject(projectId, userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til at redigere dette projekt");
+            throw new InsufficientPermissionsException("Du har ikke adgang til at redigere dette projekt");
         }
 
         String validationError = isValidProjectForm(projectForm);
@@ -88,7 +86,7 @@ public class ProjectService {
     @Transactional
     public void deleteProject(int id, int userId) {
         if(!projectAccessService.canDeleteProject(id, userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til at slette dette projekt");
+            throw new InsufficientPermissionsException("Du har ikke adgang til at slette dette projekt");
         }
         projectRepository.delete(id, userId);
     }
