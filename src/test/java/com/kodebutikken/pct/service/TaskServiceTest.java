@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.TaskForm;
+import com.kodebutikken.pct.exception.UnauthorizedException;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,14 @@ class TaskServiceTest {
     @Mock
     private SubprojectService subprojectService;
 
+    @Mock
+    private ProjectAccessService projectAccessService;
+
     @InjectMocks
     private TaskService taskService;
 
     @Test
     void createTask_success() {
-
         TaskForm taskForm = new TaskForm();
         taskForm.setTitle("Ny task");
         taskForm.setDescription("Beskrivelse");
@@ -42,13 +45,12 @@ class TaskServiceTest {
         int userId = 1;
 
         when(subprojectService.existsById(subprojectId)).thenReturn(true);
-        when(subprojectService.getProjectOwnerId(subprojectId)).thenReturn(userId);
+        when(subprojectService.getProjectIdBySubprojectId(subprojectId)).thenReturn(1);
+        when(projectAccessService.canEditProject(1, userId)).thenReturn(true);
 
         taskService.createTask(taskForm, subprojectId, userId);
 
-        ArgumentCaptor<Task> taskCaptor =
-                ArgumentCaptor.forClass(Task.class);
-
+        ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
         verify(taskRepository).createTask(taskCaptor.capture());
 
         Task capturedTask = taskCaptor.getValue();
@@ -61,10 +63,11 @@ class TaskServiceTest {
 
     @Test
     void createTask_shouldThrowException_whenTitleIsEmpty() {
-
         TaskForm taskForm = new TaskForm();
         taskForm.setTitle("");
         taskForm.setEstimatedTime(5.0);
+
+        when(subprojectService.existsById(1)).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class, () -> {
             taskService.createTask(taskForm, 1, 1);
@@ -75,10 +78,11 @@ class TaskServiceTest {
 
     @Test
     void createTask_shouldThrowException_whenEstimatedTimeIsZero() {
-
         TaskForm taskForm = new TaskForm();
         taskForm.setTitle("Ny task");
         taskForm.setEstimatedTime(0.0);
+
+        when(subprojectService.existsById(1)).thenReturn(true);
 
         assertThrows(IllegalArgumentException.class, () -> {
             taskService.createTask(taskForm, 1, 1);
@@ -89,7 +93,6 @@ class TaskServiceTest {
 
     @Test
     void createTask_shouldThrowException_whenSubprojectDoesNotExist() {
-
         TaskForm taskForm = new TaskForm();
         taskForm.setTitle("Ny task");
         taskForm.setEstimatedTime(5.0);
@@ -105,7 +108,6 @@ class TaskServiceTest {
 
     @Test
     void createTask_shouldThrowException_whenDeadlineIsPast() {
-
         TaskForm taskForm = new TaskForm();
         taskForm.setTitle("Ny task");
         taskForm.setEstimatedTime(5.0);
@@ -121,18 +123,19 @@ class TaskServiceTest {
     }
 
     @Test
-    void createTask_shouldThrowException_whenUserIsNotProjectOwner() {
-
+    void createTask_shouldThrowException_whenUserCannotEditProject() {
         TaskForm taskForm = new TaskForm();
         taskForm.setTitle("Ny task");
         taskForm.setEstimatedTime(5.0);
 
         when(subprojectService.existsById(1)).thenReturn(true);
-        when(subprojectService.getProjectOwnerId(1)).thenReturn(2);
+        when(subprojectService.getProjectIdBySubprojectId(1)).thenReturn(1);
+        when(projectAccessService.canEditProject(1, 1)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(UnauthorizedException.class, () -> {
             taskService.createTask(taskForm, 1, 1);
         });
+
         verify(taskRepository, never()).createTask(any());
     }
 
