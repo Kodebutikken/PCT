@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.SubprojectForm;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.repository.SubprojectRepository;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,9 @@ class SubprojectServiceTest {
 
     @Mock
     private SubprojectRepository subprojectRepository;
+
+    @Mock
+    private ProjectAccessService projectAccessService;
 
     @InjectMocks
     private SubprojectService subprojectService;
@@ -60,5 +64,33 @@ class SubprojectServiceTest {
         subprojectService.createSubproject(1, form2);
 
         verify(subprojectRepository, times(2)).createSubproject(any());
+    }
+
+    @Test
+    void deleteSubproject_shouldDeleteProject_whenUserIsOwnerOrEditor() {
+        int subProjectId = 1;
+        int userId = 1;
+
+        when(subprojectRepository.existsById(subProjectId)).thenReturn(true);
+        when(subprojectRepository.getProjectIdBySubprojectId(subProjectId)).thenReturn(1);
+
+        subprojectService.deleteSubproject(subProjectId, userId);
+
+        verify(projectAccessService).requireEditProject(1, userId);
+        verify(subprojectRepository).deleteProject(subProjectId);
+    }
+
+    @Test
+    void deleteSubproject_shouldThrowException_whenUserIsNotOwnerOrEditor() {
+        int subProjectId = 1;
+        int userId = 1;
+
+        when(subprojectRepository.existsById(subProjectId)).thenReturn(true);
+        when(subprojectRepository.getProjectIdBySubprojectId(subProjectId)).thenReturn(1);
+        doThrow(new InsufficientPermissionsException("Du har ikke tilladelse til at slette dette delprojekt")).when(projectAccessService).requireEditProject(1, userId);
+
+        assertThrows(InsufficientPermissionsException.class, () -> subprojectService.deleteSubproject(subProjectId, userId));
+
+        verify(subprojectRepository, never()).deleteProject(anyInt());
     }
 }

@@ -146,4 +146,34 @@ class TaskServiceTest {
 
         verify(taskRepository).getTasksBySubprojectId(1);
     }
+
+    @Test
+    void deleteTask_shouldDeleteTask_whenUserIsOwner() {
+        int subProjectId = 1;
+        int taskId = 1;
+        int userId = 1;
+
+        when(subprojectService.getProjectIdBySubprojectId(subProjectId)).thenReturn(1);
+        when(subprojectService.existsById(subProjectId)).thenReturn(true);
+
+        taskService.deleteTask(subProjectId, taskId, userId);
+
+        verify(projectAccessService).requireEditProject(1, userId);
+        verify(taskRepository).deleteTask(subProjectId, taskId);
+    }
+
+    @Test
+    void deleteTask_shouldThrowException_whenUserIsNotOwnerOrEditor() {
+        int subProjectId = 1;
+        int taskId = 1;
+        int userId = 2;
+
+        when(subprojectService.getProjectIdBySubprojectId(subProjectId)).thenReturn(1);
+        when(subprojectService.existsById(subProjectId)).thenReturn(true);
+        doThrow(new InsufficientPermissionsException("Du har ikke adgang til at redigere dette projekt"))
+                .when(projectAccessService).requireEditProject(1, userId);
+
+        assertThrows(InsufficientPermissionsException.class, () -> taskService.deleteTask(subProjectId, taskId, userId));
+        verify(taskRepository, never()).deleteTask(subProjectId, taskId);
+    }
 }
