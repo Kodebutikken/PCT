@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.dto;
 
 
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +21,8 @@ public class TaskForm {
     @NotBlank(message = "Opgaver skal have en beskrivelse")
     private String description;
 
-    @DecimalMin(value = "0.1", message = "Estimeret tid skal være større end 0")
+    @DecimalMin(value = "0.5", message = "Estimeret tid skal være større end 0")
+    @DecimalMax(value = "150", message = "Estimeret tid kan maksimalt være 150")
     private Double estimatedTime;
 
     @FutureOrPresent(message = "Deadline skal være en fremtidig dato")

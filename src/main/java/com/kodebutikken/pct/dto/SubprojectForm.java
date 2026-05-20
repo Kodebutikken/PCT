@@ -19,6 +19,6 @@ public class SubprojectForm {
 
     @NotNull(message = "En deadline er påkrævet!")
     @Future(message = "Deadlinen skal være en fremtidig dato")
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate deadline;
 }
