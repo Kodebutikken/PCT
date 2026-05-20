@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Resource {
     private int id;
     private String name;
-    private String compentencies;
+    private String skills;
     private int dailyWorkingHours;
     private double hourlyWage;
 }

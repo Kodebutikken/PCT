@@ -2,7 +2,8 @@ package com.kodebutikken.pct.model;
 
 public enum Role {
     PROJECT_MANAGER("Projektleder"),
-    DEVELOPER("Udvikler");
+    DEVELOPER("Udvikler"),
+    ADMINISTRATOR("Administrator");
 
     private final String displayName;
 

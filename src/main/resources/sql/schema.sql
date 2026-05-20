@@ -70,13 +70,13 @@ CREATE TABLE task
     #FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE SET NULL
 );
 
-DROP TABLE IF EXISTS resource;
+DROP TABLE IF EXISTS resources;
 
-CREATE TABLE resource
+CREATE TABLE resources
 (
     id          INTEGER AUTO_INCREMENT PRIMARY KEY,
     name        VARCHAR(255) NOT NULL,
-    compentencies VARCHAR(50)  NOT NULL,
+    skills VARCHAR(50)  NOT NULL,
     daily_working_hours DECIMAL(4, 2) NOT NULL,
     hourly_wage DECIMAL(10, 2) NOT NULL,
     created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -90,6 +90,6 @@ CREATE TABLE task_resource
     resource_id INTEGER NOT NULL,
     PRIMARY KEY (task_id, resource_id),
     FOREIGN KEY (task_id) REFERENCES task (id) ON DELETE CASCADE,
-    FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE
+    FOREIGN KEY (resource_id) REFERENCES resources (id) ON DELETE CASCADE
 );
 
