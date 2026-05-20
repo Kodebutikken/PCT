@@ -1,7 +1,8 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.TaskForm;
-import com.kodebutikken.pct.exception.UnauthorizedException;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
+import com.kodebutikken.pct.exception.ProjectNotFoundException;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,6 @@ class TaskServiceTest {
 
         when(subprojectService.existsById(subprojectId)).thenReturn(true);
         when(subprojectService.getProjectIdBySubprojectId(subprojectId)).thenReturn(1);
-        when(projectAccessService.canEditProject(1, userId)).thenReturn(true);
 
         taskService.createTask(taskForm, subprojectId, userId);
 
@@ -69,9 +69,7 @@ class TaskServiceTest {
 
         when(subprojectService.existsById(1)).thenReturn(true);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            taskService.createTask(taskForm, 1, 1);
-        });
+        assertThrows(IllegalArgumentException.class, () -> taskService.createTask(taskForm, 1, 1));
 
         verify(taskRepository, never()).createTask(any());
     }
@@ -84,9 +82,7 @@ class TaskServiceTest {
 
         when(subprojectService.existsById(1)).thenReturn(true);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            taskService.createTask(taskForm, 1, 1);
-        });
+        assertThrows(IllegalArgumentException.class, () -> taskService.createTask(taskForm, 1, 1));
 
         verify(taskRepository, never()).createTask(any());
     }
@@ -99,9 +95,7 @@ class TaskServiceTest {
 
         when(subprojectService.existsById(1)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            taskService.createTask(taskForm, 1, 1);
-        });
+        assertThrows(ProjectNotFoundException.class, () -> taskService.createTask(taskForm, 1, 1));
 
         verify(taskRepository, never()).createTask(any());
     }
@@ -115,9 +109,7 @@ class TaskServiceTest {
 
         when(subprojectService.existsById(1)).thenReturn(true);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            taskService.createTask(taskForm, 1, 1);
-        });
+        assertThrows(IllegalArgumentException.class, () -> taskService.createTask(taskForm, 1, 1));
 
         verify(taskRepository, never()).createTask(any());
     }
@@ -130,11 +122,10 @@ class TaskServiceTest {
 
         when(subprojectService.existsById(1)).thenReturn(true);
         when(subprojectService.getProjectIdBySubprojectId(1)).thenReturn(1);
-        when(projectAccessService.canEditProject(1, 1)).thenReturn(false);
+        doThrow(new InsufficientPermissionsException("Du har ikke adgang til at redigere dette projekt"))
+                .when(projectAccessService).requireEditProject(1, 1);
 
-        assertThrows(UnauthorizedException.class, () -> {
-            taskService.createTask(taskForm, 1, 1);
-        });
+        assertThrows(InsufficientPermissionsException.class, () -> taskService.createTask(taskForm, 1, 1));
 
         verify(taskRepository, never()).createTask(any());
     }
