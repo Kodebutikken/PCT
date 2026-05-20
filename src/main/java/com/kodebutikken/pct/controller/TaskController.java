@@ -2,7 +2,9 @@ package com.kodebutikken.pct.controller;
 
 
 import com.kodebutikken.pct.dto.TaskForm;
+import com.kodebutikken.pct.model.Resource;
 import com.kodebutikken.pct.service.ProjectAccessService;
+import com.kodebutikken.pct.service.ResourceService;
 import com.kodebutikken.pct.service.SubprojectService;
 import com.kodebutikken.pct.service.TaskService;
 import jakarta.servlet.http.HttpSession;
@@ -12,19 +14,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/projects/subprojects")
 public class TaskController {
     private final TaskService taskService;
     private final SubprojectService subprojectService;
     private final ProjectAccessService projectAccessService;
+    private final ResourceService resourceService;
 
     public TaskController(TaskService taskService,
                           SubprojectService subprojectService,
-                          ProjectAccessService projectAccessService) {
+                          ProjectAccessService projectAccessService,
+                          ResourceService resourceService) {
         this.taskService = taskService;
         this.subprojectService = subprojectService;
         this.projectAccessService = projectAccessService;
+        this.resourceService = resourceService;
     }
 
     @GetMapping("/{id}/tasks/create")
@@ -36,9 +43,11 @@ public class TaskController {
 
         Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
         projectAccessService.requireEditProject(projectId, userId);
+        List<Resource> allResources = resourceService.getResources();
 
         model.addAttribute("taskForm", new TaskForm());
         model.addAttribute("subprojectId", id);
+        model.addAttribute("resources", allResources);
         return "task/create";
     }
 

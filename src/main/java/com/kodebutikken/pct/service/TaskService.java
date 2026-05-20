@@ -2,6 +2,7 @@ package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.TaskForm;
 import com.kodebutikken.pct.exception.ProjectNotFoundException;
+import com.kodebutikken.pct.model.Resource;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class TaskService {
         task.setEstimatedHours(taskForm.getEstimatedTime());
         task.setDeadline(taskForm.getDeadline());
         task.setSubprojectId(subprojectId);
+        task.setResourceId(taskForm.getResourceId());
 
         taskRepository.createTask(task);
     }
@@ -56,6 +58,12 @@ public class TaskService {
         // Implementer logikken for at hente alle opgaver for et givent delprojekt
         // Brug subprojectId til at filtrere opgaverne i databasen
         return taskRepository.getTasksBySubprojectId(subprojectId);
+    }
+
+    public List<Resource> getResourcesForSubproject(int subprojectId) {
+        // Implementer logikken for at hente alle ressourcer tilknyttet et givent projekt
+        // Brug projectId til at filtrere ressourcerne i databasen
+        return taskRepository.getResourcesForSubproject(subprojectId);
     }
 
     @Transactional

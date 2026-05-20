@@ -94,9 +94,9 @@
                             <p class="text-xs text-gray-500">Estimeret timer</p>
                             <p class="text-sm text-gray-900 font-medium" th:text="${task.estimatedHours} + ' timer'"></p>
                         </div>
-                        <div th:if="${task.resourceTypeId != null}">
-                            <p class="text-xs text-gray-500">Ressourcetype</p>
-                            <p class="text-sm text-gray-900 font-medium" th:text="${task.resourceTypeId}"></p>
+                        <div th:each="resource : ${resources}" th:if="${task.resourceId != null and resource.id == task.resourceId}">
+                            <p class="text-xs text-gray-500">Ressource</p>
+                            <p class="text-sm text-gray-900 font-medium" th:text="${resource.name}"></p>
                         </div>
                     </div>
                     <div th:if="${task.description != null and !#strings.isEmpty(task.description)}" class="mb-3">

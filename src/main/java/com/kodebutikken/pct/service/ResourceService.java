@@ -36,8 +36,8 @@ public class ResourceService {
         resourceRepository.save(resource);
     }
 
-    public List<Resource> getResources(int userId) {
-        projectAccessService.requireCreateProject(userId);
+    public List<Resource> getResources() {
+
         return resourceRepository.getAllResources();
     }
 

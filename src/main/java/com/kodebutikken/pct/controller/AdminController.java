@@ -33,7 +33,7 @@ public class AdminController {
         }
         projectAccessService.requireAdmin(userId);
 
-        List<Resource> resources = resourceService.getResources(userId);
+        List<Resource> resources = resourceService.getResources();
 
         model.addAttribute("resources", resources);
 
