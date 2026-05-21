@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Rediger ressource</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center">
+
+<div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-4">Rediger ressource</h1>
+    <form th:action="@{/admin/resources/{id}/edit(id=${resourceId})}" th:object="${resourceForm}" method="post">
+        <div class="mb-4">
+            <label class="block text-sm text-gray-500 mb-1">Ressource Navn
+                <input type="text" name="name" placeholder="Ressource Navn" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+            </label>
+            <p th:if="${#fields.hasErrors('name')}"
+               th:errors="*{name}"
+               class="text-red-600 text-xs mt-1">
+            </p>
+
+            <label class="block text-sm text-gray-500 mb-1 mt-4">Kompetencer
+                <input type="text" name="skills" placeholder="Kompetencer (komma-separeret)" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+            </label>
+            <p th:if="${#fields.hasErrors('skills')}"
+               th:errors="*{skills}"
+               class="text-red-600 text-xs mt-1">
+            </p>
+            <label class="block text-sm text-gray-500 mb-1 mt-4">Daglige timer
+                <input type="number" name="dailyWorkingHours" placeholder="Daglige timer" required min="0" step="0.5"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+            </label>
+            <p th:if="${#fields.hasErrors('dailyWorkingHours')}"
+               th:errors="*{dailyWorkingHours}"
+               class="text-red-600 text-xs mt-1">
+            </p>
+            <label class="block text-sm text-gray-500 mb-1 mt-4">Timeløn
+                <input type="number" name="hourlyWage" placeholder="Timeløn" required min="0" step="0.01"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+            </label>
+            <p th:if="${#fields.hasErrors('hourlyWage')}"
+               th:errors="*{hourlyWage}"
+               class="text-red-600 text-xs mt-1">
+            </p>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-blue-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition">
+            Opdater Ressource
+        </button>
+    </form>
+
+    <a th:href="@{/admin}" class="w-full mt-4">
+    <button type="button" class="w-full mt-4 bg-gray-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-600 transition">
+        Annuller
+    </button>
+    </a>
+</div>
+</body>
+</html>

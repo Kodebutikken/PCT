@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.SubprojectForm;
+import com.kodebutikken.pct.model.Resource;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.service.ProjectAccessService;
@@ -78,11 +79,14 @@ public class SubprojectController {
         Subproject subproject = subprojectService.getSubprojectById(id);
 
         List<Task> tasks = taskService.getTasksBySubprojectId(id);
+        List<Resource> resources = taskService.getResourcesForSubproject(id);
+
         model.addAttribute("tasks", tasks);
         model.addAttribute("subproject", subproject);
         model.addAttribute("canEditProject", projectAccessService.canEditProject(projectId, userId));
         model.addAttribute("canManageProject", projectAccessService.canManageProject(projectId, userId));
         model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(projectId, userId));
+        model.addAttribute("resources", resources);
         return "subproject/spPage";
     }
 

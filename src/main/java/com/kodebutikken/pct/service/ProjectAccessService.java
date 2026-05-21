@@ -21,7 +21,7 @@ public class ProjectAccessService {
 
     public boolean canCreateProject(int userId) {
         User user = userService.getUserById(userId);
-        return user.getRole() == Role.PROJECT_MANAGER;
+        return user.getRole() == Role.PROJECT_MANAGER || user.getRole() == Role.ADMINISTRATOR;
     }
 
     public void requireCreateProject(int userId) {
@@ -67,5 +67,12 @@ public class ProjectAccessService {
 
     public boolean canDeleteProject(int projectId, int userId) {
         return projectRepository.isProjectOwner(projectId, userId);
+    }
+
+    public void requireAdmin(Integer userId) {
+        User user = userService.getUserById(userId);
+        if (user.getRole() != Role.ADMINISTRATOR) {
+            throw new InsufficientPermissionsException("Du har ikke adgang til denne handling");
+        }
     }
 }

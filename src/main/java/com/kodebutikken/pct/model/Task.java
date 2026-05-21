@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @NoArgsConstructor
 @Data
@@ -16,10 +17,10 @@ public class Task {
     private LocalDate deadline;
     private int subprojectId;
     private int resourceTypeId;
-    private int resourceId;
+    private Integer resourceId;
     private LocalDate createdAt;
 
-    public Task(int id, String title, String description, double estimatedHours, LocalDate deadline, int subprojectId, int resourceTypeId, int resourceId, LocalDate createdAt) {
+    public Task(int id, String title, String description, double estimatedHours, LocalDate deadline, int subprojectId, int resourceTypeId, Integer resourceId, LocalDate createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;

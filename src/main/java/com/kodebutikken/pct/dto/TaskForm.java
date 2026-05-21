@@ -1,10 +1,12 @@
 package com.kodebutikken.pct.dto;
 
 
+import com.kodebutikken.pct.model.Resource;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,4 +30,7 @@ public class TaskForm {
     @FutureOrPresent(message = "Deadline skal være en fremtidig dato")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate deadline;
+
+    @NotNull(message = "Ressource er påkrævet")
+    private Integer resourceId;
 }

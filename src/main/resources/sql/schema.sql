@@ -7,7 +7,8 @@ CREATE TABLE user
     name          VARCHAR(100) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role          VARCHAR(50)  NOT NULL
+    role          VARCHAR(50)  NOT NULL,
+    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 DROP TABLE IF EXISTS project;
@@ -23,7 +24,9 @@ CREATE TABLE project
     FOREIGN KEY (created_by) REFERENCES user (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS project_user
+DROP TABLE IF EXISTS project_user;
+
+CREATE TABLE project_user
 (
     project_id INTEGER NOT NULL,
     user_id    INTEGER NOT NULL,
@@ -33,7 +36,9 @@ CREATE TABLE IF NOT EXISTS project_user
     FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS subproject
+DROP TABLE IF EXISTS subproject;
+
+CREATE TABLE subproject
 (
     id          INTEGER AUTO_INCREMENT PRIMARY KEY,
     title       VARCHAR(255) NOT NULL,
@@ -63,5 +68,28 @@ CREATE TABLE task
     # HVAD ER resource?
     #FOREIGN KEY (resource_type_id) REFERENCES resource_type (id) ON DELETE SET NULL,
     #FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE SET NULL
+);
+
+DROP TABLE IF EXISTS resources;
+
+CREATE TABLE resources
+(
+    id          INTEGER AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    skills VARCHAR(50)  NOT NULL,
+    daily_working_hours DECIMAL(4, 2) NOT NULL,
+    hourly_wage DECIMAL(10, 2) NOT NULL,
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS task_resource;
+
+CREATE TABLE task_resource
+(
+    task_id     INTEGER NOT NULL,
+    resource_id INTEGER NOT NULL,
+    PRIMARY KEY (task_id, resource_id),
+    FOREIGN KEY (task_id) REFERENCES task (id) ON DELETE CASCADE,
+    FOREIGN KEY (resource_id) REFERENCES resources (id) ON DELETE CASCADE
 );
 
