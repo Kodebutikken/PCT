@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public class SubprojectRepository {
     private final JdbcTemplate jdbcTemplate;
+
     public SubprojectRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -64,7 +65,29 @@ public class SubprojectRepository {
     }
 
     public Integer getProjectIdBySubprojectId(int subprojectId) {
-        String sql = "SELECT project_id FROM subproject WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, subprojectId);
+        try {
+            String sql = "SELECT project_id FROM subproject WHERE id = ?";
+            return jdbcTemplate.queryForObject(sql, Integer.class, subprojectId);
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
+    }
+
+    public void updateSubproject(Subproject subproject) {
+        try {
+            String sql = "UPDATE subproject SET title = ?, description = ?, deadline = ? WHERE id = ?";
+            jdbcTemplate.update(sql, subproject.getTitle(), subproject.getDescription(), subproject.getDeadline(), subproject.getId());
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
+    }
+
+    public void deleteProject(int id) {
+        try {
+            String sql = "DELETE FROM subproject WHERE id = ?";
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException("Der opstod en fejl ved sletning af delprojektet: " + exception.getMessage());
+        }
     }
 }

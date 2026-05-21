@@ -17,7 +17,7 @@ public class ProjectForm {
 
     private String description;
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate deadline;
 
     private List<ProjectMemberForm> members = new ArrayList<>();
