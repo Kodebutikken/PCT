@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.ProjectForm;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.service.ProjectAccessService;
@@ -86,7 +87,9 @@ class ProjectControllerTest {
         session.setAttribute("userId", 1);
         session.setAttribute("role", Role.DEVELOPER);
 
-        when(projectAccessService.canCreateProject(1)).thenReturn(false);
+        doThrow(new InsufficientPermissionsException("Du har ikke adgang til at oprette et nyt projekt"))
+                .when(projectAccessService).requireCreateProject(1);
+
 
         mockMvc.perform(post("/projects/create")
                         .session(session)
@@ -94,8 +97,9 @@ class ProjectControllerTest {
                         .param("description", "Project Description")
                         .param("dueDate", LocalDate.now().plusDays(7).toString()))
                 .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/error"));
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("error"))
+                .andExpect(model().attribute("status", 403));
 
         verify(projectService, never()).createProject(any(ProjectForm.class), anyInt());
 

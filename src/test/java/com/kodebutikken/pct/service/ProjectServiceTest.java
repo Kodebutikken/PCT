@@ -1,7 +1,7 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.ProjectForm;
-import com.kodebutikken.pct.exception.UnauthorizedException;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.repository.ProjectRepository;
 import org.junit.jupiter.api.Test;
@@ -27,9 +27,6 @@ class ProjectServiceTest {
     @Mock
     private ProjectAccessService projectAccessService;
 
-    @Mock
-    private UserService userService;
-
     @InjectMocks
     private ProjectService projectService;
 
@@ -42,7 +39,6 @@ class ProjectServiceTest {
         projectForm.setDeadline(LocalDate.now().plusDays(7));
 
         int userId = 1;
-        when(projectAccessService.canCreateProject(userId)).thenReturn(true);
 
         projectService.createProject(projectForm, userId);
 
@@ -63,9 +59,7 @@ class ProjectServiceTest {
         projectForm.setTitle("Test Project");
         projectForm.setDeadline(LocalDate.now().minusDays(1));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            projectService.createProject(projectForm, 1);
-        });
+        assertThrows(IllegalArgumentException.class, () -> projectService.createProject(projectForm, 1));
 
         verify(projectRepository, never()).save(any(), anyInt());
     }
@@ -76,9 +70,7 @@ class ProjectServiceTest {
         projectForm.setTitle("   ");
         projectForm.setDeadline(LocalDate.now().plusDays(1));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            projectService.createProject(projectForm, 1);
-        });
+        assertThrows(IllegalArgumentException.class, () -> projectService.createProject(projectForm, 1));
 
         verify(projectRepository, never()).save(any(), anyInt());
     }
@@ -120,9 +112,7 @@ class ProjectServiceTest {
 
         when(projectAccessService.canDeleteProject(projectId, userId)).thenReturn(false);
 
-        assertThrows(UnauthorizedException.class, () -> {
-            projectService.deleteProject(projectId, userId);
-        });
+        assertThrows(InsufficientPermissionsException.class, () -> projectService.deleteProject(projectId, userId));
 
         verify(projectRepository, never()).delete(anyInt(), anyInt());
     }
