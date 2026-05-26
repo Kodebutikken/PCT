@@ -24,8 +24,7 @@ public class ResourceService {
         if(resourceForm == null) {
             throw new IllegalArgumentException("Resource form cannot be null");
         }
-
-        projectAccessService.requireCreateProject(userId);
+        projectAccessService.requireEditResources(userId);
 
         Resource resource = new Resource();
         resource.setName(resourceForm.getName().trim());
@@ -37,7 +36,6 @@ public class ResourceService {
     }
 
     public List<Resource> getResources() {
-
         return resourceRepository.getAllResources();
     }
 
@@ -64,8 +62,7 @@ public class ResourceService {
         if(resourceForm == null) {
             throw new IllegalArgumentException("Resource cannot be null");
         }
-
-        projectAccessService.requireCreateProject(userId);
+        projectAccessService.requireEditResources(userId);
 
         Resource updatedResource = new Resource();
         updatedResource.setId(resourceId);
@@ -78,7 +75,7 @@ public class ResourceService {
     }
 
     public void deleteResource(int id, Integer userId) {
-        projectAccessService.requireAdmin(userId);
+        projectAccessService.requireEditResources(userId);
         resourceRepository.delete(id);
     }
 }

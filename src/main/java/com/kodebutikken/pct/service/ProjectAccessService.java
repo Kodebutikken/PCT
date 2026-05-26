@@ -41,6 +41,17 @@ public class ProjectAccessService {
         }
     }
 
+    public boolean canEditResources(Integer userId) {
+        User user = userService.getUserById(userId);
+        return user.getRole() == Role.PROJECT_MANAGER || user.getRole() == Role.ADMINISTRATOR;
+    }
+
+    public void requireEditResources(int userId) {
+        if (!canEditResources(userId)) {
+            throw new InsufficientPermissionsException("Du har ikke adgang til at administrer ressourcer");
+        }
+    }
+
     public boolean canEditProject(int projectId, int userId) {
         return projectRepository.isProjectOwner(projectId, userId)
                 || projectRepository.hasProjectAccessLevel(projectId, userId,
@@ -75,4 +86,5 @@ public class ProjectAccessService {
             throw new InsufficientPermissionsException("Du har ikke adgang til denne handling");
         }
     }
+
 }

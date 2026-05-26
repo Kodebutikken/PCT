@@ -63,6 +63,10 @@ public class ProjectService {
         return projectRepository.getProjectMembers(projectId);
     }
 
+    public String getProjectOwnerName(int projectId) {
+        return projectRepository.getProjectOwnerName(projectId);
+    }
+
     @Transactional
     public void updateProject(int projectId, ProjectForm projectForm, int userId) {
         if (!projectAccessService.canManageProject(projectId, userId)) {
@@ -80,7 +84,19 @@ public class ProjectService {
         existingProject.setDeadline(projectForm.getDeadline());
 
         projectRepository.update(existingProject);
-        projectRepository.replaceProjectMembers(projectId, toAssignedMembers(projectForm.getMembers(), existingProject.getCreatedBy()));
+
+        List<ProjectMember> assignedMembers = toAssignedMembers(projectForm.getMembers(), existingProject.getCreatedBy());
+
+        // Re-add the editing manager's own membership — they are excluded from the form list
+        // so replaceProjectMembers would otherwise wipe their project_user row.
+        if (!projectRepository.isProjectOwner(projectId, userId)) {
+            projectRepository.getProjectMembers(projectId).stream()
+                    .filter(m -> m.getUserId() == userId)
+                    .findFirst()
+                    .ifPresent(assignedMembers::add);
+        }
+
+        projectRepository.replaceProjectMembers(projectId, assignedMembers);
     }
 
     @Transactional
@@ -94,12 +110,14 @@ public class ProjectService {
 
     public ProjectForm buildProjectForm(Integer projectId, int currentUserId) {
         ProjectForm form = new ProjectForm();
+        int ownerUserId = -1;
 
         if (projectId != null) {
             Project project = getProjectById(projectId);
             form.setTitle(project.getTitle());
             form.setDescription(project.getDescription());
             form.setDeadline(project.getDeadline());
+            ownerUserId = project.getCreatedBy();
         }
 
         List<ProjectMember> existingMembers = projectId != null ? getProjectMembers(projectId) : List.of();
@@ -113,6 +131,7 @@ public class ProjectService {
         List<ProjectMemberForm> memberForms = new ArrayList<>();
         for (User user : users) {
             if (user.getId() == currentUserId) continue;
+            if (user.getId() == ownerUserId) continue;
 
             ProjectMember existing = memberByUserId.get(user.getId());
             ProjectMemberForm memberForm = new ProjectMemberForm();

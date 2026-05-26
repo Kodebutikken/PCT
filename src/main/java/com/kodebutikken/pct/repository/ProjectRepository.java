@@ -32,7 +32,8 @@ public class ProjectRepository {
             rs.getString("title"),
             rs.getString("description"),
             rs.getDate("deadline").toLocalDate(),
-            rs.getInt("created_by")
+            rs.getInt("created_by"),
+            rs.getTimestamp("created_at").toLocalDateTime()
     );
 
     private final RowMapper<ProjectMember> projectMemberRowMapper = (rs, rowNum) -> new ProjectMember(
@@ -73,7 +74,7 @@ public class ProjectRepository {
                     FROM project p
                     LEFT JOIN project_user pu ON p.id = pu.project_id
                     WHERE p.created_by = ? OR pu.user_id = ?
-                    ORDER BY p.deadline ASC, p.id DESC
+                    ORDER BY p.deadline, p.id DESC
                     """;
             return jdbcTemplate.query(sql, projectRowMapper, userId, userId);
         } catch (DataAccessException exception) {
@@ -89,6 +90,15 @@ public class ProjectRepository {
             throw new ProjectNotFoundException("Projekt med id " + projectId + " blev ikke fundet");
         } catch (DataAccessException exception) {
             throw new DatabaseOperationException(exception.getMessage());
+        }
+    }
+
+    public String getProjectOwnerName(int projectId) {
+        try {
+            String sql = "SELECT name FROM user WHERE id = (SELECT created_by FROM project WHERE id = ?)";
+            return jdbcTemplate.queryForObject(sql, String.class, projectId);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ProjectNotFoundException("Projekt med id " + projectId + " blev ikke fundet");
         }
     }
 
@@ -152,7 +162,7 @@ public class ProjectRepository {
                     FROM project_user pu
                     JOIN user u ON u.id = pu.user_id
                     WHERE pu.project_id = ?
-                    ORDER BY u.name ASC
+                    ORDER BY u.name
                     """;
             return jdbcTemplate.query(sql, projectMemberRowMapper, projectId);
         } catch (DataAccessException exception) {

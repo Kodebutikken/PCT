@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,8 +79,8 @@ class ProjectServiceTest {
     @Test
     void getProjectsAccessibleByUserId() {
         List<Project> mockProjects = List.of(
-                new Project(1, "Project 1", "Description 1", LocalDate.now().plusDays(5), 1),
-                new Project(2, "Project 2", "Description 2", LocalDate.now().plusDays(10), 1)
+                new Project(1, "Project 1", "Description 1", LocalDate.now().plusDays(5), 1, LocalDateTime.now()),
+                new Project(2, "Project 2", "Description 2", LocalDate.now().plusDays(10), 1, LocalDateTime.now())
         );
 
         when(projectRepository.getProjectsAccessibleByUserId(1)).thenReturn(mockProjects);

@@ -106,6 +106,7 @@ public class ProjectController {
         model.addAttribute("subprojects", subprojects);
         model.addAttribute("project", project);
         model.addAttribute("projectMembers", projectMembers);
+        model.addAttribute("projectOwnerName", projectService.getProjectOwnerName(id));
         model.addAttribute("canEditProject", projectAccessService.canEditProject(id, userId));
         model.addAttribute("canManageProject", projectAccessService.canManageProject(id, userId));
         model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(id, userId));
@@ -123,8 +124,8 @@ public class ProjectController {
         projectAccessService.requireManageProject(id, userId);
 
         model.addAttribute("projectForm", projectService.buildProjectForm(id, userId));
+        model.addAttribute("canManageMembers", projectAccessService.canManageProject(id, userId));
         model.addAttribute("projectId", id);
-        model.addAttribute("isEdit", true);
         return "project/edit";
     }
 
@@ -143,7 +144,6 @@ public class ProjectController {
         if(bindingResult.hasErrors()) {
             projectService.repopulateProjectMembers(projectForm, userId);
             model.addAttribute("projectId", id);
-            model.addAttribute("isEdit", true);
             return "project/edit";
         }
 
@@ -153,7 +153,6 @@ public class ProjectController {
             bindingResult.reject("globalError", e.getMessage());
             projectService.repopulateProjectMembers(projectForm, userId);
             model.addAttribute("projectId", id);
-            model.addAttribute("isEdit", true);
             return "project/edit";
         }
 
