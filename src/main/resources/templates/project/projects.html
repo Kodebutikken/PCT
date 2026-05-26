@@ -5,48 +5,55 @@
     <title>Projekter</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center">
 
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
 
-<div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-lg md:max-w-7xl overflow-x-auto">
-    <h1 class="text-xl font-medium text-gray-900 mb-1">Projekter</h1>
+<main class="flex-1 w-full">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+        <div class="bg-white border border-gray-200 rounded-xl p-8 w-full overflow-x-auto">
+        <h1 class="text-xl font-medium text-gray-900 mb-1">Projekter</h1>
 
-    <table class="w-full border border-gray-200 rounded-lg mt-4">
-        <thead>
-        <tr class="bg-gray-100">
-            <th class="text-left px-4 py-2">Projekt Id</th>
-            <th class="text-left px-4 py-2">Projekt Navn</th>
-            <th class="text-left px-4 py-2">Beskrivelse</th>
-            <th class="text-left px-4 py-2">Handlinger</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="project : ${projects}" class="border-t border-gray-200 hover:bg-gray-50">
-            <td class="px-4 py-2" th:text="'# ' + ${project.id}">Projekt Id</td>
-            <td class="px-4 py-2" th:text="${project.title}">Projekt Navn</td>
-            <td class="px-4 py-2" th:text="${project.description}">Projekt Beskrivelse</td>
-            <td class="flex justify-center items-center px-4 py-2 gap-2">
-                <a th:href="@{/projects/{id}(id=${project.id})}">
-                    <button class="bg-blue-500 text-sm text-white px-3 py-2 rounded hover:bg-blue-600 transition flex-auto flex-nowrap">
-                        Se Detaljer
-                    </button>
-                </a>
-                <form th:action="@{|/projects/${project.id}/delete|}" method="post"
-                      onsubmit="confirm('Er du sikker på, at du vil slette dette projekt?');">
-                    <button class="bg-red-500 text-sm text-white px-3 py-2 rounded hover:bg-red-600 transition"
-                            type="submit">
-                        Slet
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <a th:if="${canCreateProjects}" th:href="@{/projects/create}">
-        <button class="mt-4 bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
-            Opret Nyt Projekt
-        </button>
-    </a>
-</div>
+        <table class="w-full border border-gray-200 rounded-lg mt-4">
+            <thead>
+            <tr class="bg-gray-100">
+                <th class="text-left px-4 py-2">Projekt Id</th>
+                <th class="text-left px-4 py-2">Projekt Navn</th>
+                <th class="text-left px-4 py-2">Beskrivelse</th>
+                <th class="text-left px-4 py-2">Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="project : ${projects}" class="border-t border-gray-200 hover:bg-gray-50">
+                <td class="px-4 py-2" th:text="'# ' + ${project.id}">Projekt Id</td>
+                <td class="px-4 py-2" th:text="${project.title}">Projekt Navn</td>
+                <td class="px-4 py-2" th:text="${project.description}">Projekt Beskrivelse</td>
+                <td class="flex justify-center items-center px-4 py-2 gap-2">
+                    <a th:href="@{/projects/{id}(id=${project.id})}">
+                        <button class="bg-blue-500 text-sm text-white px-3 py-2 rounded hover:bg-blue-600 transition flex-auto flex-nowrap">
+                            Se Detaljer
+                        </button>
+                    </a>
+                    <form th:action="@{|/projects/${project.id}/delete|}" method="post"
+                          onsubmit="confirm('Er du sikker på, at du vil slette dette projekt?');">
+                        <button class="bg-red-500 text-sm text-white px-3 py-2 rounded hover:bg-red-600 transition"
+                                type="submit">
+                            Slet
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <a th:if="${canCreateProjects}" th:href="@{/projects/create}">
+            <button class="mt-4 bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                Opret Nyt Projekt
+            </button>
+        </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
 </html>

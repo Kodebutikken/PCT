@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
-  <meta charset="UTF-8">
-  <title>Log ind</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <title>Log ind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center">
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
 
-<div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-sm">
-  <h1 class="text-xl font-medium text-gray-900 mb-1">Log ind</h1>
-  <p class="text-sm text-gray-500 mb-6">Indtast dine oplysninger for at fortsætte</p>
+<main class="flex-1 w-full flex justify-center items-center">
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-sm">
+        <h1 class="text-xl font-medium text-gray-900 mb-1">Log ind</h1>
+        <p class="text-sm text-gray-500 mb-6">Indtast dine oplysninger for at fortsætte</p>
 
-  <div th:if="${error}" class="bg-red-50 text-red-700 text-sm px-4 py-2 rounded-lg mb-4"
-       th:text="${error}"></div>
+        <div th:if="${error}" class="bg-red-50 text-red-700 text-sm px-4 py-2 rounded-lg mb-4"
+             th:text="${error}"></div>
 
-  <form th:action="@{/users/login}" th:object="${loginForm}" method="post">
-    <div class="mb-4">
-      <label class="block text-sm text-gray-500 mb-1">E-mail
-        <input type="email" name="email" placeholder="din@email.dk" required
-               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
-      </label>
-      <p th:if="${#fields.hasErrors('email')}"
-         th:errors="*{email}"
-         class="text-red-600 text-xs mt-1">
-      </p>
+        <form th:action="@{/users/login}" th:object="${loginForm}" method="post">
+            <div class="mb-4">
+                <label class="block text-sm text-gray-500 mb-1">E-mail
+                    <input type="email" name="email" placeholder="din@email.dk" required
+                           class="w-full border border-gray-200 text-black rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                </label>
+                <p th:if="${#fields.hasErrors('email')}"
+                   th:errors="*{email}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm text-gray-500 mb-1">Adgangskode
+                    <input type="password" name="password" placeholder="••••••••" required
+                           class="w-full border border-gray-200 text-black rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                </label>
+                <p th:if="${#fields.hasErrors('password')}"
+                   th:errors="*{password}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+            <button type="submit"
+                    class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition">
+                Log ind
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-gray-500 mt-4">
+            Har du ikke en konto?
+            <a th:href="@{/users/register}" class="text-gray-900 font-medium hover:underline">Opret bruger</a>
+        </p>
     </div>
-    <div class="mb-6">
-      <label class="block text-sm text-gray-500 mb-1">Adgangskode
-        <input type="password" name="password" placeholder="••••••••" required
-               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
-      </label>
-      <p th:if="${#fields.hasErrors('password')}"
-         th:errors="*{password}"
-         class="text-red-600 text-xs mt-1">
-      </p>
-    </div>
-    <button type="submit"
-            class="w-full bg-gray-900 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition">
-      Log ind
-    </button>
-  </form>
+</main>
 
-  <p class="text-center text-sm text-gray-500 mt-4">
-    Har du ikke en konto?
-    <a th:href="@{/users/register}" class="text-gray-900 font-medium hover:underline">Opret bruger</a>
-  </p>
-</div>
-
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
 </html>

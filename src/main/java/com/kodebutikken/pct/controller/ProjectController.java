@@ -3,10 +3,12 @@ package com.kodebutikken.pct.controller;
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.ProjectMember;
+import com.kodebutikken.pct.model.ProjectStats;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.service.ProjectAccessService;
 import com.kodebutikken.pct.service.ProjectService;
 import com.kodebutikken.pct.service.SubprojectService;
+import com.kodebutikken.pct.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/projects")
@@ -22,18 +25,21 @@ public class ProjectController {
     private final ProjectService projectService;
     private final SubprojectService subprojectService;
     private final ProjectAccessService projectAccessService;
+    private final TaskService taskService;
 
     public ProjectController(ProjectService projectService,
                              SubprojectService subprojectService,
-                             ProjectAccessService projectAccessService) {
+                             ProjectAccessService projectAccessService,
+                             TaskService taskService) {
         this.projectService = projectService;
         this.subprojectService = subprojectService;
         this.projectAccessService = projectAccessService;
+        this.taskService = taskService;
     }
 
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
-        int userId = (int) session.getAttribute("userId");
+        Integer userId = (Integer) session.getAttribute("userId");
         if (session.getAttribute("userId") == null) {
             return "redirect:/users/login";
         }
@@ -95,12 +101,16 @@ public class ProjectController {
         Project project = projectService.getProjectById(id);
         List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
         List<ProjectMember> projectMembers = projectService.getProjectMembers(id);
+        ProjectStats stats = taskService.getProjectStats(id);
+        Map<Integer, Integer> taskCounts = taskService.getTaskCountsByProjectId(id);
         model.addAttribute("subprojects", subprojects);
         model.addAttribute("project", project);
         model.addAttribute("projectMembers", projectMembers);
         model.addAttribute("canEditProject", projectAccessService.canEditProject(id, userId));
         model.addAttribute("canManageProject", projectAccessService.canManageProject(id, userId));
         model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(id, userId));
+        model.addAttribute("projectStats", stats);
+        model.addAttribute("subprojectTaskCounts", taskCounts);
         return "project/projectPage";
     }
 

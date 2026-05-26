@@ -1,12 +1,7 @@
 package com.kodebutikken.pct.dto;
 
 
-import com.kodebutikken.pct.model.Resource;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +13,7 @@ import java.time.LocalDate;
 public class TaskForm {
 
     @NotBlank(message = "Titlen må ikke være tom")
+    @Size(max = 255, message = "Titlen må ikke være længere end 255 tegn")
     private String title;
 
     @NotBlank(message = "Opgaver skal have en beskrivelse")

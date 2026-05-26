@@ -1,5 +1,6 @@
 package com.kodebutikken.pct.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,7 +13,8 @@ import java.util.List;
 @Getter
 @Setter
 public class ProjectForm {
-    @NotBlank(message = "Projekttittel må ikke være tom")
+    @NotBlank(message = "Projekttitel må ikke være tom")
+    @Size(max = 255, message = "Projekttitel må ikke være længere end 255 tegn")
     private String title;
 
     private String description;

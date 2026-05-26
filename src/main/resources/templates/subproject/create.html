@@ -7,9 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center">
-<main>
-    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-s min-w-[400px]">
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
+
+<main class="flex-1 w-full flex justify-center items-center">
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-sm">
         <form th:action="@{'/projects/' + ${projectId} + '/subprojects/create'}"
               th:object="${subprojectForm}"
               method="post">
@@ -61,5 +63,7 @@
         </form>
     </div>
 </main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
 </html>

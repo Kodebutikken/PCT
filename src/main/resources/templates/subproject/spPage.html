@@ -6,8 +6,9 @@
     <title th:text="${subproject.title} + ' - PCT'">Delprojekt</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-50">
-<main class="max-w-5xl mx-auto px-4 py-10">
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
+<main class="flex-1 w-full max-w-5xl mx-auto px-4 py-10">
 
     <a th:href="@{/projects/{id}(id=${subproject.projectId})}"
        class="inline-block text-sm text-gray-500 hover:text-gray-700 hover:underline mb-4">
@@ -20,7 +21,7 @@
             <a th:if="${canEditProject}" th:href="@{/projects/subprojects/{id}/tasks/create(id=${subproject.id})}">
                 <button type="button"
                         class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
-                    Tilføj Task
+                    Tilføj opgave
                 </button>
             </a>
             <a th:if="${canManageProject}" th:href="@{/projects/subprojects/{id}/edit(id=${subproject.id})}">
@@ -124,5 +125,7 @@
         </div>
     </div>
 </main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
 </html>

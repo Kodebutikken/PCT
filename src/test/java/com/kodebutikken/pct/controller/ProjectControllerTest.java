@@ -7,6 +7,7 @@ import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.service.ProjectAccessService;
 import com.kodebutikken.pct.service.ProjectService;
 import com.kodebutikken.pct.service.SubprojectService;
+import com.kodebutikken.pct.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ class ProjectControllerTest {
 
     @MockitoBean
     private ProjectAccessService projectAccessService;
+
+    @MockitoBean
+    private TaskService taskService;
 
     @Test
     void showProjects() throws Exception {

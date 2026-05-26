@@ -109,6 +109,6 @@ class UserControllerTest {
         String view = userController.logout(session);
 
         verify(session).invalidate();
-        assertEquals("redirect:/users/login", view);
+        assertEquals("redirect:/", view);
     }
 }

@@ -2,6 +2,7 @@ package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.TaskForm;
 import com.kodebutikken.pct.exception.ProjectNotFoundException;
+import com.kodebutikken.pct.model.ProjectStats;
 import com.kodebutikken.pct.model.Resource;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TaskService {
@@ -64,6 +66,14 @@ public class TaskService {
         // Implementer logikken for at hente alle ressourcer tilknyttet et givent projekt
         // Brug projectId til at filtrere ressourcerne i databasen
         return taskRepository.getResourcesForSubproject(subprojectId);
+    }
+
+    public ProjectStats getProjectStats(int projectId) {
+        return taskRepository.getProjectStats(projectId);
+    }
+
+    public Map<Integer, Integer> getTaskCountsByProjectId(int projectId) {
+        return taskRepository.getTaskCountsByProjectId(projectId);
     }
 
     @Transactional
