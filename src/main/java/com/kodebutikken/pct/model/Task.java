@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @NoArgsConstructor
 @Data
@@ -16,7 +15,7 @@ public class Task {
     private double estimatedHours;
     private LocalDate deadline;
     private int subprojectId;
-    private int resourceTypeId;
+    private Integer resourceTypeId;
     private Integer resourceId;
     private LocalDate createdAt;
 

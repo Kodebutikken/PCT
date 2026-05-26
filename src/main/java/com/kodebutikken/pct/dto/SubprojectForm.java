@@ -1,5 +1,6 @@
 package com.kodebutikken.pct.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,7 +13,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class SubprojectForm {
-    @NotBlank(message = "Subprojekt titel må ikke være tom!")
+    @NotBlank(message = "Delprojekt titel må ikke være tom!")
+    @Size(max = 255, message = "Delprojekt titel må ikke være længere end 255 tegn!")
     private String title;
 
     private String description;

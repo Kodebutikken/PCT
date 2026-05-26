@@ -15,7 +15,7 @@
         <p class="mt-1 mb-6 text-sm text-muted-foreground">Felter markeret med * er påkrævet</p>
         <form th:action="@{/projects/create}" th:object="${projectForm}" method="post">
             <div class="mb-4">
-                <label for="name" class="block text-sm text-gray-500 mb-1">Projekt titel: *</label>
+                <label for="name" class="block text-sm text-gray-500 mb-1">Projekt titel *</label>
                 <input type="text" id="name" th:field="*{title}" required
                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
                 <p th:if="${#fields.hasErrors('title')}"
@@ -25,7 +25,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="description" class="block text-sm text-gray-500 mb-1">Beskrivelse:</label>
+                <label for="description" class="block text-sm text-gray-500 mb-1">Beskrivelse</label>
                 <textarea id="description" th:field="*{description}" rows="4" maxlength="500"
                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
                 <p th:if="${#fields.hasErrors('description')}"
@@ -35,7 +35,7 @@
             </div>
 
             <div class="mb-6">
-                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline: *</label>
+                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline *</label>
                 <input type="date" id="deadline" th:field="*{deadline}" required
                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
                 <p th:if="${#fields.hasErrors('deadline')}"
