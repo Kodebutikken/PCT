@@ -64,7 +64,7 @@ public class SubprojectController {
             model.addAttribute("projectId", id);
             return "subproject/create";
         }
-        return "redirect:/projects/" + id + "/subprojects";
+        return "redirect:/projects/" + id;
     }
 
     @GetMapping("/subprojects/{id}/tasks")

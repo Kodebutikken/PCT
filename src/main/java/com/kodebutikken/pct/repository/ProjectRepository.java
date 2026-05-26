@@ -107,9 +107,15 @@ public class ProjectRepository {
     }
 
     public boolean isProjectOwner(int projectId, int userId) {
-        String sql = "SELECT created_by FROM project WHERE id = ?";
-        Integer ownerId = jdbcTemplate.queryForObject(sql, Integer.class, projectId);
-        return ownerId != null && ownerId == userId;
+        try {
+            String sql = "SELECT created_by FROM project WHERE id = ?";
+            Integer ownerId = jdbcTemplate.queryForObject(sql, Integer.class, projectId);
+            return ownerId != null && ownerId == userId;
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ProjectNotFoundException("Projekt med id " + projectId + " blev ikke fundet");
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
     }
 
     public boolean isProjectMember(int projectId, int userId) {

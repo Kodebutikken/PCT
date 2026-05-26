@@ -24,7 +24,7 @@ public class ResourceRepository {
 
     public void save(Resource resource) {
         try {
-            String sql = "INSERT INTO resources (name, skills, daily_working_hours, hourly_wage) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO resource (name, skills, daily_working_hours, hourly_wage) VALUES (?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
             jdbcTemplate.update(connection -> {
@@ -48,7 +48,7 @@ public class ResourceRepository {
 
     public List<Resource> getAllResources() {
         try {
-            String sql = "SELECT * FROM resources";
+            String sql = "SELECT * FROM resource";
             return jdbcTemplate.query(sql, (rs, rowNum) -> {
                 Resource resource = new Resource();
                 resource.setId(rs.getInt("id"));
@@ -65,7 +65,7 @@ public class ResourceRepository {
 
     public Resource getResourceById(int id) {
         try {
-            String sql = "SELECT * FROM resources WHERE id = ?";
+            String sql = "SELECT * FROM resource WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
                 Resource resource = new Resource();
                 resource.setId(rs.getInt("id"));
@@ -84,7 +84,7 @@ public class ResourceRepository {
 
     public void update(@Valid Resource resource) {
         try {
-            String sql = "UPDATE resources SET name = ?, skills = ?, daily_working_hours = ?, hourly_wage = ? WHERE id = ?";
+            String sql = "UPDATE resource SET name = ?, skills = ?, daily_working_hours = ?, hourly_wage = ? WHERE id = ?";
             jdbcTemplate.update(sql, resource.getName(), resource.getSkills(), resource.getDailyWorkingHours(), resource.getHourlyWage(), resource.getId());
         } catch (DataAccessException e) {
             throw new DatabaseOperationException("Fejl ved opdatering af ressource: " + e.getMessage());
@@ -93,7 +93,7 @@ public class ResourceRepository {
 
     public void delete(int id) {
         try {
-            String sql = "DELETE FROM resources WHERE id = ?";
+            String sql = "DELETE FROM resource WHERE id = ?";
             jdbcTemplate.update(sql, id);
         } catch (DataAccessException e) {
             throw new DatabaseOperationException("Fejl ved sletning af ressource: " + e.getMessage());

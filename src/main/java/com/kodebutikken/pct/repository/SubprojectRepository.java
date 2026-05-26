@@ -1,9 +1,10 @@
 package com.kodebutikken.pct.repository;
 
 import com.kodebutikken.pct.exception.DatabaseOperationException;
-import com.kodebutikken.pct.model.Resource;
+import com.kodebutikken.pct.exception.ProjectNotFoundException;
 import com.kodebutikken.pct.model.Subproject;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -69,6 +70,8 @@ public class SubprojectRepository {
         try {
             String sql = "SELECT project_id FROM subproject WHERE id = ?";
             return jdbcTemplate.queryForObject(sql, Integer.class, subprojectId);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ProjectNotFoundException("Delprojekt med id " + subprojectId + " blev ikke fundet");
         } catch (DataAccessException exception) {
             throw new DatabaseOperationException(exception.getMessage());
         }

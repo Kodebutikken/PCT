@@ -33,7 +33,7 @@ public class ProjectController {
 
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
-        int userId = (int) session.getAttribute("userId");
+        Integer userId = (Integer) session.getAttribute("userId");
         if (session.getAttribute("userId") == null) {
             return "redirect:/users/login";
         }
