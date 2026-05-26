@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,16 @@ public class ResourceRepository {
     public ResourceRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    private final RowMapper<Resource> resourceRowMapper = (rs, rowNum) -> {
+        Resource resource = new Resource();
+        resource.setId(rs.getInt("id"));
+        resource.setName(rs.getString("name"));
+        resource.setSkills(rs.getString("skills"));
+        resource.setDailyWorkingHours(rs.getInt("daily_working_hours"));
+        resource.setHourlyWage(rs.getDouble("hourly_wage"));
+        return resource;
+    };
 
     public void save(Resource resource) {
         try {
@@ -49,15 +60,7 @@ public class ResourceRepository {
     public List<Resource> getAllResources() {
         try {
             String sql = "SELECT * FROM resource";
-            return jdbcTemplate.query(sql, (rs, rowNum) -> {
-                Resource resource = new Resource();
-                resource.setId(rs.getInt("id"));
-                resource.setName(rs.getString("name"));
-                resource.setSkills(rs.getString("skills"));
-                resource.setDailyWorkingHours(rs.getInt("daily_working_hours"));
-                resource.setHourlyWage(rs.getDouble("hourly_wage"));
-                return resource;
-            });
+            return jdbcTemplate.query(sql, resourceRowMapper);
         } catch (DataAccessException e) {
             throw new DatabaseOperationException("Fejl ved hentning af ressourcer: " + e.getMessage());
         }
@@ -66,15 +69,7 @@ public class ResourceRepository {
     public Resource getResourceById(int id) {
         try {
             String sql = "SELECT * FROM resource WHERE id = ?";
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-                Resource resource = new Resource();
-                resource.setId(rs.getInt("id"));
-                resource.setName(rs.getString("name"));
-                resource.setSkills(rs.getString("skills"));
-                resource.setDailyWorkingHours(rs.getInt("daily_working_hours"));
-                resource.setHourlyWage(rs.getDouble("hourly_wage"));
-                return resource;
-            }, id);
+            return jdbcTemplate.queryForObject(sql, resourceRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
