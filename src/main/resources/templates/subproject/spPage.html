@@ -16,17 +16,17 @@
     </a>
 
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-        <h1 class="text-2xl font-semibold text-gray-900" th:text="${subproject.title}">Projekttitel</h1>
+        <h1 class="text-2xl font-semibold text-gray-900" th:text="${subproject.title}">Delprojekttitel</h1>
         <div class="flex items-center gap-2">
             <a th:if="${canEditProject}" th:href="@{/projects/subprojects/{id}/tasks/create(id=${subproject.id})}">
                 <button type="button"
-                        class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                        class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition">
                     Tilføj opgave
                 </button>
             </a>
             <a th:if="${canManageProject}" th:href="@{/projects/subprojects/{id}/edit(id=${subproject.id})}">
                 <button type="button"
-                        class="bg-yellow-500 text-sm text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+                        class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition">
                     Rediger delprojekt
                 </button>
             </a>
@@ -34,34 +34,32 @@
                   method="post"
                   onsubmit="return confirm('Er du sikker på, at du vil slette dette delprojekt?');">
                 <button type="submit"
-                        class="bg-red-500 text-sm text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                        class="border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition">
                     Slet delprojekt
                 </button>
             </form>
         </div>
     </div>
 
-    <div class="bg-white border border-gray-200 rounded-xl p-8">
+    <div class="bg-white border border-gray-200 rounded-2xl p-8">
         <h2 class="text-xl font-medium text-gray-900 mb-4">Delprojekt detaljer</h2>
 
         <div th:if="${subproject.description != null and !#strings.isEmpty(subproject.description)}" class="mb-4">
-            <p class="text-sm text-gray-500 mb-1">Beskrivelse</p>
+            <p class="text-xs text-gray-500 mb-1">Beskrivelse</p>
             <p class="text-sm text-gray-700 text-pretty" th:text="${subproject.description}"></p>
         </div>
 
         <div class="mb-4">
-            <p class="text-sm text-gray-500 mb-1">Deadline</p>
-            <p class="text-sm text-gray-900 font-medium"
+            <p class="text-xs text-gray-500 mb-1">Deadline</p>
+            <p class="text-sm font-medium text-gray-900"
                th:if="${subproject.deadline != null}"
                th:text="${#temporals.format(subproject.deadline, 'dd/MM-yyyy')}"></p>
             <p class="text-sm text-gray-400 italic" th:if="${subproject.deadline == null}">Ingen deadline sat</p>
         </div>
 
-        <div class="mt-6">
-            <p class="text-sm text-gray-500 mb-2">Tilknyttet projekt</p>
-            <div>
-                <p class="text-sm text-gray-900 font-medium" th:text="'# ' + ${subproject.projectId}"></p>
-            </div>
+        <div class="mt-4">
+            <p class="text-xs text-gray-500 mb-1">Tilknyttet projekt</p>
+            <a th:href="@{/projects/{id} (id=${subproject.projectId})}" class="text-sm font-medium text-gray-900 hover:underline" th:text="${projectName}"></a>
         </div>
     </div>
 
@@ -69,41 +67,39 @@
         <h2 class="text-xl font-medium text-gray-900 mb-4">Opgaver</h2>
 
         <div th:if="${#lists.isEmpty(tasks)}"
-             class="bg-white border border-gray-200 rounded-xl p-8 text-center">
-            <p class="text-sm text-gray-500 mb-4">Ingen delprojekter endnu.</p>
+             class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+            <p class="text-sm text-gray-500 mb-4">Ingen opgaver endnu.</p>
             <a th:if="${canEditProject}" th:href="@{/projects/subprojects/{id}/tasks/create(id=${subproject.id})}">
                 <button type="button"
-                        class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                        class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition">
                     Opret den første opgave
                 </button>
             </a>
         </div>
 
-        <div th:unless="${#lists.isEmpty(tasks)}"
-             class="grid grid-cols-1 gap-4">
+        <div th:unless="${#lists.isEmpty(tasks)}" class="space-y-3">
             <div th:each="task : ${tasks}"
                  class="bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-base font-medium text-gray-900 mb-3" th:text="${task.title}">Titel</h3>
-                    <div class="flex flex-row items-center justify-center gap-6 mb-3">
+                    <div class="flex flex-row flex-wrap gap-6 mb-3">
                         <div th:if="${task.deadline != null}">
                             <p class="text-xs text-gray-500">Deadline</p>
-                            <p class="text-sm text-gray-900 font-medium"
+                            <p class="text-sm font-medium text-gray-900"
                                th:text="${#temporals.format(task.deadline, 'dd/MM-yyyy')}"></p>
                         </div>
-                        <div th:if="${task.estimatedHours != null}">
-                            <p class="text-xs text-gray-500">Estimeret timer</p>
-                            <p class="text-sm text-gray-900 font-medium" th:text="${task.estimatedHours} + ' timer'"></p>
+                        <div>
+                            <p class="text-xs text-gray-500">Estimerede timer</p>
+                            <p class="text-sm font-medium text-gray-900" th:text="${task.estimatedHours}"></p>
                         </div>
                         <div th:each="resource : ${resources}" th:if="${task.resourceId != null and resource.id == task.resourceId}">
                             <p class="text-xs text-gray-500">Ressource</p>
-                            <p class="text-sm text-gray-900 font-medium" th:text="${resource.name}"></p>
+                            <p class="text-sm font-medium text-gray-900" th:text="${resource.name}"></p>
                         </div>
                     </div>
-                    <div th:if="${task.description != null and !#strings.isEmpty(task.description)}" class="mb-3">
+                    <div th:if="${task.description != null and !#strings.isEmpty(task.description)}">
                         <p class="text-xs text-gray-500">Beskrivelse</p>
-                        <p class="text-sm text-gray-800 text-pretty"
-                           th:text="${task.description}"></p>
+                        <p class="text-sm text-gray-700 text-pretty mt-0.5" th:text="${task.description}"></p>
                     </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
@@ -112,11 +108,12 @@
                         <p class="text-xs text-gray-700"
                            th:text="${#temporals.format(task.createdAt, 'dd/MM-yyyy')}"></p>
                     </div>
-                    <form th:if="${canDeleteProject}" th:action="@{/projects/subprojects/{pid}/task/{tid}/delete(pid=${subproject.id}, tid=${task.id})}"
+                    <form th:if="${canDeleteProject}"
+                          th:action="@{/projects/subprojects/{pid}/task/{tid}/delete(pid=${subproject.id}, tid=${task.id})}"
                           method="post"
                           onsubmit="return confirm('Er du sikker på, at du vil slette denne opgave?');">
                         <button type="submit"
-                                class="bg-red-500 text-sm text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                                class="border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition">
                             Slet opgave
                         </button>
                     </form>

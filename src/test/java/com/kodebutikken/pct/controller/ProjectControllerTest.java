@@ -17,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,8 +48,8 @@ class ProjectControllerTest {
     @Test
     void showProjects() throws Exception {
         List<Project> projects = List.of(
-                new Project(1, "Project 1", "Description 1", LocalDate.now(), 1),
-                new Project(2, "Project 2", "Description 2", LocalDate.now(), 1)
+                new Project(1, "Project 1", "Description 1", LocalDate.now(), 1, LocalDateTime.now()),
+                new Project(2, "Project 2", "Description 2", LocalDate.now(), 1, LocalDateTime.now())
                 );
 
         when(projectService.getProjectsAccessibleByUserId(1)).thenReturn(projects);

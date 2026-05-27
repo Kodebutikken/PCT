@@ -55,15 +55,19 @@ public class SubprojectRepository {
         }
     }
 
+    public String getProjectTitleById(int id) {
+        try {
+            String sql = "SELECT title FROM project WHERE id = (SELECT project_id FROM subproject WHERE id = ?)";
+            return jdbcTemplate.queryForObject(sql, String.class, id);
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
+    }
+
     public boolean existsById(int id) {
         String sql = "SELECT COUNT(*) FROM subproject WHERE ID = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
         return count != null && count > 0;
-    }
-
-    public Integer getProjectOwnerId(int subprojectId) {
-        String sql = "SELECT p.created_by FROM project p JOIN subproject s ON p.id = s.project_id WHERE s.id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, subprojectId);
     }
 
     public Integer getProjectIdBySubprojectId(int subprojectId) {

@@ -19,7 +19,7 @@ public class Task {
     private Integer resourceId;
     private LocalDate createdAt;
 
-    public Task(int id, String title, String description, double estimatedHours, LocalDate deadline, int subprojectId, int resourceTypeId, Integer resourceId, LocalDate createdAt) {
+    public Task(int id, String title, String description, double estimatedHours, LocalDate deadline, int subprojectId, Integer resourceTypeId, Integer resourceId, LocalDate createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;

@@ -40,12 +40,12 @@ public class SubprojectService {
         return subprojectRepository.existsById(id);
     }
 
-    public Integer getProjectOwnerId(int subprojectId) {
-        return subprojectRepository.getProjectOwnerId(subprojectId);
-    }
-
     public Integer getProjectIdBySubprojectId(int subprojectId) {
         return subprojectRepository.getProjectIdBySubprojectId(subprojectId);
+    }
+
+    public String getProjectNameBySubprojectId(int subprojectId) {
+        return subprojectRepository.getProjectTitleById(subprojectId);
     }
 
     public SubprojectForm getEditForm(int id) {

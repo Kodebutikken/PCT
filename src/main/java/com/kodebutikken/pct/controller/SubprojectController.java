@@ -83,6 +83,7 @@ public class SubprojectController {
 
         model.addAttribute("tasks", tasks);
         model.addAttribute("subproject", subproject);
+        model.addAttribute("projectName", subprojectService.getProjectNameBySubprojectId(id));
         model.addAttribute("canEditProject", projectAccessService.canEditProject(projectId, userId));
         model.addAttribute("canManageProject", projectAccessService.canManageProject(projectId, userId));
         model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(projectId, userId));

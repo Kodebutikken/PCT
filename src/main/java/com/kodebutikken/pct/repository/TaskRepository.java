@@ -93,7 +93,7 @@ public class TaskRepository {
 
     public List<Resource> getResourcesForSubproject(int subprojectId) {
         String sql = """
-                SELECT r.* FROM resource r
+                SELECT DISTINCT r.* FROM resource r
                 JOIN task_resource tr ON r.id = tr.resource_id
                 JOIN task t ON tr.task_id = t.id
                 WHERE t.subproject_id = ?
