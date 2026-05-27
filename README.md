@@ -8,6 +8,15 @@ Projektet er bygget med en klassisk lagdelt struktur, hvor controllers håndtere
 
 Den primære arbejdsgang i systemet er, at brugere kan oprette og tilgå projekter, opdele projekter i delprojekter, oprette opgaver, knytte ressourcer til arbejdet og få overblik over projektets estimerede timer og omkostninger.
 
+## Link til Live Demo
+https://pct-e8gcf6drfqemg7ep.norwayeast-01.azurewebsites.net/
+
+Log ind med en af følgende demo brugere:
+```
+Email: anders@pct-demo.dk -- Har rollen Project Manager
+Kodeord: DemoKode1234
+```
+
 ## Indhold
 
 - [Introduktion af projektet](#introduktion-af-projektet)
