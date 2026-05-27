@@ -2,7 +2,7 @@ package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.dto.ProjectMemberForm;
-import com.kodebutikken.pct.exception.UnauthorizedException;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
 import com.kodebutikken.pct.model.ProjectAccessLevel;
 import com.kodebutikken.pct.model.ProjectMember;
 import com.kodebutikken.pct.model.Project;
@@ -39,9 +39,7 @@ public class ProjectService {
         if(validationError != null) {
             throw new IllegalArgumentException(validationError);
         }
-        if (!projectAccessService.canCreateProject(userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til at oprette projekter");
-        }
+        projectAccessService.requireCreateProject(userId);
 
         Project project = new Project();
         project.setTitle(projectForm.getTitle().trim());
@@ -65,10 +63,14 @@ public class ProjectService {
         return projectRepository.getProjectMembers(projectId);
     }
 
+    public String getProjectOwnerName(int projectId) {
+        return projectRepository.getProjectOwnerName(projectId);
+    }
+
     @Transactional
     public void updateProject(int projectId, ProjectForm projectForm, int userId) {
         if (!projectAccessService.canManageProject(projectId, userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til at redigere dette projekt");
+            throw new InsufficientPermissionsException("Du har ikke adgang til at redigere dette projekt");
         }
 
         String validationError = isValidProjectForm(projectForm);
@@ -82,13 +84,25 @@ public class ProjectService {
         existingProject.setDeadline(projectForm.getDeadline());
 
         projectRepository.update(existingProject);
-        projectRepository.replaceProjectMembers(projectId, toAssignedMembers(projectForm.getMembers(), existingProject.getCreatedBy()));
+
+        List<ProjectMember> assignedMembers = toAssignedMembers(projectForm.getMembers(), existingProject.getCreatedBy());
+
+        // Re-add the editing manager's own membership — they are excluded from the form list
+        // so replaceProjectMembers would otherwise wipe their project_user row.
+        if (!projectRepository.isProjectOwner(projectId, userId)) {
+            projectRepository.getProjectMembers(projectId).stream()
+                    .filter(m -> m.getUserId() == userId)
+                    .findFirst()
+                    .ifPresent(assignedMembers::add);
+        }
+
+        projectRepository.replaceProjectMembers(projectId, assignedMembers);
     }
 
     @Transactional
     public void deleteProject(int id, int userId) {
         if(!projectAccessService.canDeleteProject(id, userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til at slette dette projekt");
+            throw new InsufficientPermissionsException("Du har ikke adgang til at slette dette projekt");
         }
         projectRepository.delete(id, userId);
     }
@@ -96,12 +110,14 @@ public class ProjectService {
 
     public ProjectForm buildProjectForm(Integer projectId, int currentUserId) {
         ProjectForm form = new ProjectForm();
+        int ownerUserId = -1;
 
         if (projectId != null) {
             Project project = getProjectById(projectId);
             form.setTitle(project.getTitle());
             form.setDescription(project.getDescription());
             form.setDeadline(project.getDeadline());
+            ownerUserId = project.getCreatedBy();
         }
 
         List<ProjectMember> existingMembers = projectId != null ? getProjectMembers(projectId) : List.of();
@@ -115,6 +131,7 @@ public class ProjectService {
         List<ProjectMemberForm> memberForms = new ArrayList<>();
         for (User user : users) {
             if (user.getId() == currentUserId) continue;
+            if (user.getId() == ownerUserId) continue;
 
             ProjectMember existing = memberByUserId.get(user.getId());
             ProjectMemberForm memberForm = new ProjectMemberForm();

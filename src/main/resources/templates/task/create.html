@@ -7,27 +7,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center">
-<main>
-    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-s">
-        <h1>Opret ny task</h1>
-        <form th:action="@{/tasks/create}" th:object="${taskForm}" method="post">
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
+<main class="flex-1 w-full flex justify-center items-center">
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-sm">
+        <h1 class="text-xl font-semibold text-gray-900 mb-4">Opret ny opgave</h1>
+        <form th:action="@{create}" th:object="${taskForm}" method="post">
             <input type="hidden" name="subprojectId" th:value="${subprojectId}"/>
             <div class="mb-4">
                 <label for="title" class="block text-sm text-gray-500 mb-1">Titel: *
                     <input id="title" type="text" th:field="*{title}"
-                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-gray-300"
                            required/>
                 </label>
-                <p th:if="${#fields.hasErrors('estimatedTime')}"
-                   th:errors="*{estimatedTime}"
+                <p th:if="${#fields.hasErrors('title')}"
+                   th:errors="*{title}"
                    class="text-red-600 text-xs mt-1">
                 </p>
             </div>
             <div class="mb-4">
                 <label for="description" class="block text-sm text-gray-500 mb-1">Beskrivelse:
                     <textarea id="description" th:field="*{description}" rows="4" maxlength="255"
-                              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
+                              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-gray-300"></textarea>
                 </label>
                 <p th:if="${#fields.hasErrors('description')}"
                    th:errors="*{description}"
@@ -36,8 +37,8 @@
             </div>
             <div class="mb-4">
                 <label for="estimatedTime" class="block text-sm text-gray-500 mb-1">Estimerede timer: *
-                    <input id="estimatedTime" type="number" step="0.5" th:field="*{estimatedTime}"
-                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    <input id="estimatedTime" type="number" step="0.5" th:field="*{estimatedTime}" max="150.0"
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-gray-300"
                            required/>
                 </label>
                 <p th:if="${#fields.hasErrors('estimatedTime')}"
@@ -46,13 +47,44 @@
                 </p>
             </div>
             <div class="mb-6">
-                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline
-                    <input id="deadline" type="date" th:field="*{deadline}"
-                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
-                </label>
+                <label for="deadline" class="block text-sm text-gray-500 mb-1">Deadline</label>
+                <input id="deadline" type="date" th:field="*{deadline}"
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"/>
+                <p th:if="${#fields.hasErrors('deadline')}"
+                   th:errors="*{deadline}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
             </div>
-            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition">Opret opgave</button>
+            <div class="mb-6">
+                <label for="assignedResource">Resource</label>
+                <select id="assignedResource" th:field="*{resourceId}"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <option value="" disabled selected>Vælg en ressource</option>
+                    <option th:each="resource : ${resources}" th:value="${resource.id}"
+                            th:text="${resource.name}">Ressource
+                    </option>
+                </select>
+                <p th:if="${#fields.hasErrors('resourceId')}"
+                   th:errors="*{resourceId}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <div class="flex justify-between">
+                <a th:href="@{/projects/subprojects/{id}/tasks(id=${subprojectId})}">
+                    <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition"
+                            type="button">Annuller
+                    </button>
+                </a>
+                <button type="submit"
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition">
+                    Opret opgave
+                </button>
+            </div>
         </form>
     </div>
 </main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
+</html>

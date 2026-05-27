@@ -6,9 +6,10 @@
     <title th:text="${project.title} + ' - PCT'">Projekt</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-50">
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
 
-<main class="max-w-5xl mx-auto px-4 py-10">
+<main class="flex-1 w-full max-w-5xl mx-auto px-4 py-10">
 
     <a th:href="@{/projects}"
        class="inline-block text-sm text-gray-500 hover:text-gray-700 hover:underline mb-4">
@@ -20,68 +21,82 @@
         <div class="flex items-center gap-2">
             <a th:if="${canEditProject}" th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
                 <button type="button"
-                        class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                        class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition">
                     Tilføj delprojekt
                 </button>
             </a>
             <a th:if="${canManageProject}" th:href="@{/projects/{id}/edit(id=${project.id})}">
                 <button type="button"
-                        class="bg-yellow-500 text-sm text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+                        class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition">
                     Rediger projekt
                 </button>
             </a>
             <form th:if="${canDeleteProject}" th:action="@{/projects/{id}/delete(id=${project.id})}"
                   method="post"
-                  onsubmit="confirm('Er du sikker på, at du vil slette dette projekt?');">
+                  onsubmit="return confirm('Er du sikker på, at du vil slette dette projekt?');">
                 <button type="submit"
-                        class="bg-red-500 text-sm text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                        class="border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-50 transition">
                     Slet projekt
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Project info card -->
-    <div class="bg-white border border-gray-200 rounded-xl p-8">
+    <div class="bg-white border border-gray-200 rounded-2xl p-8">
         <h2 class="text-xl font-medium text-gray-900 mb-4">Projektdetaljer</h2>
 
         <div th:if="${project.description != null and !#strings.isEmpty(project.description)}" class="mb-4">
-            <p class="text-sm text-gray-500 mb-1">Beskrivelse</p>
+            <p class="text-xs text-gray-500 mb-1">Beskrivelse</p>
             <p class="text-sm text-gray-700" th:text="${project.description}"></p>
         </div>
 
         <div class="mb-4">
-            <p class="text-sm text-gray-500 mb-1">Deadline</p>
-            <p class="text-sm text-gray-900 font-medium"
+            <p class="text-xs text-gray-500 mb-1">Deadline</p>
+            <p class="text-sm font-medium text-gray-900"
                th:if="${project.deadline != null}"
                th:text="${#temporals.format(project.deadline, 'dd/MM-yyyy')}"></p>
             <p class="text-sm text-gray-400 italic" th:if="${project.deadline == null}">Ingen deadline sat</p>
         </div>
 
         <div th:if="${project.createdBy != 0}">
-            <p class="text-sm text-gray-500 mb-1">Oprettet af</p>
-            <p class="text-sm text-gray-900 font-medium" th:text="'Bruger #' + ${project.createdBy}"></p>
+            <p class="text-xs text-gray-500 mb-1">Oprettet af</p>
+            <p class="text-sm font-medium text-gray-900" th:text="${projectOwnerName} + ' d. ' + ${#temporals.format(project.createdAt, 'dd/MM-yyyy')}"></p>
         </div>
 
         <div class="mt-6">
-            <p class="text-sm text-gray-500 mb-2">Projektmedlemmer</p>
+            <p class="text-xs text-gray-500 mb-2">Projektmedlemmer</p>
             <div th:if="${#lists.isEmpty(projectMembers)}" class="text-sm text-gray-400 italic">Ingen medlemmer tildelt endnu</div>
             <ul th:unless="${#lists.isEmpty(projectMembers)}" class="space-y-2">
                 <li th:each="member : ${projectMembers}" class="text-sm text-gray-700">
                     <span class="font-medium" th:text="${member.userName}">Navn</span>
                     <span class="text-gray-500" th:text="'(' + ${member.userEmail} + ')'">(email)</span>
-                    <span class="ml-2 inline-block rounded bg-gray-100 px-2 py-1 text-xs text-gray-700" th:text="${member.accessLevel}">VIEWER</span>
+                    <span class="ml-2 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600" th:text="${member.accessLevel}">VIEWER</span>
                 </li>
             </ul>
         </div>
     </div>
 
-    <div class="bg-white border border-gray-200 rounded-xl p-6 mt-4">
-        <div class="flex gap-8">
+    <div class="bg-white border border-gray-200 rounded-2xl p-6 mt-4">
+        <div class="flex gap-10 justify-center">
             <div class="text-center">
                 <p class="text-2xl font-semibold text-gray-900"
-                   th:text="${#lists.size(subprojects)}">0</p>
+                   th:text="${projectStats.subprojectCount}">0</p>
                 <p class="text-xs text-gray-500 mt-1">Delprojekter</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-semibold text-gray-900"
+                   th:text="${projectStats.taskCount}">0</p>
+                <p class="text-xs text-gray-500 mt-1">Opgaver</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-semibold text-gray-900"
+                   th:text="${projectStats.totalEstimatedHours}">0</p>
+                <p class="text-xs text-gray-500 mt-1">Timer</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-semibold text-gray-900"
+                   th:text="${#numbers.formatInteger(projectStats.totalProjectedCost, 1, 'POINT')} + ' DKK'">0 DKK</p>
+                <p class="text-xs text-gray-500 mt-1">Estimeret omkostning</p>
             </div>
         </div>
     </div>
@@ -90,11 +105,11 @@
         <h2 class="text-xl font-medium text-gray-900 mb-4">Delprojekter</h2>
 
         <div th:if="${#lists.isEmpty(subprojects)}"
-             class="bg-white border border-gray-200 rounded-xl p-8 text-center">
+             class="bg-white border border-gray-200 rounded-2xl p-8 text-center">
             <p class="text-sm text-gray-500 mb-4">Ingen delprojekter endnu.</p>
             <a th:if="${canEditProject}" th:href="@{/projects/{id}/subprojects/create(id=${project.id})}">
                 <button type="button"
-                        class="bg-green-500 text-sm text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                        class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition">
                     Opret første delprojekt
                 </button>
             </a>
@@ -105,13 +120,19 @@
             <div th:each="sub : ${subprojects}"
                  class="bg-white border border-gray-200 rounded-xl p-6 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-base font-medium text-gray-900 mb-1" th:text="${sub.title}">Titel</h3>
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <h3 class="text-base font-medium text-gray-900" th:text="${sub.title}">Titel</h3>
+                        <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                              th:text="${subprojectTaskCounts[sub.id] != null ? subprojectTaskCounts[sub.id] : 0} + ' opgaver'">
+                            0 opgaver
+                        </span>
+                    </div>
                     <p th:if="${sub.description != null and !#strings.isEmpty(sub.description)}"
                        class="text-sm text-gray-500 mb-3 line-clamp-2"
                        th:text="${sub.description}"></p>
                     <div th:if="${sub.deadline != null}" class="mb-3">
                         <p class="text-xs text-gray-500">Deadline</p>
-                        <p class="text-sm text-gray-900 font-medium"
+                        <p class="text-sm font-medium text-gray-900"
                            th:text="${#temporals.format(sub.deadline, 'dd/MM-yyyy')}"></p>
                     </div>
                 </div>
@@ -123,7 +144,7 @@
                     </div>
                     <a th:href="@{/projects/subprojects/{id}/tasks(id=${sub.id})}">
                         <button type="button"
-                                class="bg-blue-500 text-sm text-white px-3 py-2 rounded hover:bg-blue-600 transition">
+                                class="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition">
                             Se opgaver
                         </button>
                     </a>
@@ -131,7 +152,8 @@
             </div>
         </div>
     </div>
-
 </main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
 </html>

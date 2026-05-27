@@ -3,10 +3,12 @@ package com.kodebutikken.pct.controller;
 import com.kodebutikken.pct.dto.ProjectForm;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.ProjectMember;
+import com.kodebutikken.pct.model.ProjectStats;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.service.ProjectAccessService;
 import com.kodebutikken.pct.service.ProjectService;
 import com.kodebutikken.pct.service.SubprojectService;
+import com.kodebutikken.pct.service.TaskService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/projects")
@@ -22,22 +25,25 @@ public class ProjectController {
     private final ProjectService projectService;
     private final SubprojectService subprojectService;
     private final ProjectAccessService projectAccessService;
+    private final TaskService taskService;
 
     public ProjectController(ProjectService projectService,
                              SubprojectService subprojectService,
-                             ProjectAccessService projectAccessService) {
+                             ProjectAccessService projectAccessService,
+                             TaskService taskService) {
         this.projectService = projectService;
         this.subprojectService = subprojectService;
         this.projectAccessService = projectAccessService;
+        this.taskService = taskService;
     }
 
     @GetMapping()
     public String showProjects(HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
         if (session.getAttribute("userId") == null) {
             return "redirect:/users/login";
         }
 
-        int userId = (int) session.getAttribute("userId");
         List<Project> projects = projectService.getProjectsAccessibleByUserId(userId);
         model.addAttribute("projects", projects);
         model.addAttribute("canCreateProjects", projectAccessService.canCreateProject(userId));
@@ -50,9 +56,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canCreateProject(userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireCreateProject(userId);
 
         model.addAttribute("projectForm", projectService.buildProjectForm(null, userId));
         model.addAttribute("isEdit", false);
@@ -69,9 +73,7 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canCreateProject(userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireCreateProject(userId);
         if(bindingResult.hasErrors()) {
             projectService.repopulateProjectMembers(projectForm, userId);
             model.addAttribute("isEdit", false);
@@ -94,19 +96,22 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canViewProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireViewProject(id, userId);
 
         Project project = projectService.getProjectById(id);
         List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
         List<ProjectMember> projectMembers = projectService.getProjectMembers(id);
+        ProjectStats stats = taskService.getProjectStats(id);
+        Map<Integer, Integer> taskCounts = taskService.getTaskCountsByProjectId(id);
         model.addAttribute("subprojects", subprojects);
         model.addAttribute("project", project);
         model.addAttribute("projectMembers", projectMembers);
+        model.addAttribute("projectOwnerName", projectService.getProjectOwnerName(id));
         model.addAttribute("canEditProject", projectAccessService.canEditProject(id, userId));
         model.addAttribute("canManageProject", projectAccessService.canManageProject(id, userId));
         model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(id, userId));
+        model.addAttribute("projectStats", stats);
+        model.addAttribute("subprojectTaskCounts", taskCounts);
         return "project/projectPage";
     }
 
@@ -116,13 +121,11 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canManageProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireManageProject(id, userId);
 
         model.addAttribute("projectForm", projectService.buildProjectForm(id, userId));
+        model.addAttribute("canManageMembers", projectAccessService.canManageProject(id, userId));
         model.addAttribute("projectId", id);
-        model.addAttribute("isEdit", true);
         return "project/edit";
     }
 
@@ -136,14 +139,11 @@ public class ProjectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canManageProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireEditProject(id, userId);
 
         if(bindingResult.hasErrors()) {
             projectService.repopulateProjectMembers(projectForm, userId);
             model.addAttribute("projectId", id);
-            model.addAttribute("isEdit", true);
             return "project/edit";
         }
 
@@ -153,7 +153,6 @@ public class ProjectController {
             bindingResult.reject("globalError", e.getMessage());
             projectService.repopulateProjectMembers(projectForm, userId);
             model.addAttribute("projectId", id);
-            model.addAttribute("isEdit", true);
             return "project/edit";
         }
 

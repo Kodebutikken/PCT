@@ -1,11 +1,13 @@
 package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.ProjectForm;
+import com.kodebutikken.pct.exception.InsufficientPermissionsException;
 import com.kodebutikken.pct.model.Project;
 import com.kodebutikken.pct.model.Role;
 import com.kodebutikken.pct.service.ProjectAccessService;
 import com.kodebutikken.pct.service.ProjectService;
 import com.kodebutikken.pct.service.SubprojectService;
+import com.kodebutikken.pct.service.TaskService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,11 +42,14 @@ class ProjectControllerTest {
     @MockitoBean
     private ProjectAccessService projectAccessService;
 
+    @MockitoBean
+    private TaskService taskService;
+
     @Test
     void showProjects() throws Exception {
         List<Project> projects = List.of(
-                new Project(1, "Project 1", "Description 1", LocalDate.now(), 1),
-                new Project(2, "Project 2", "Description 2", LocalDate.now(), 1)
+                new Project(1, "Project 1", "Description 1", LocalDate.now(), 1, LocalDateTime.now()),
+                new Project(2, "Project 2", "Description 2", LocalDate.now(), 1, LocalDateTime.now())
                 );
 
         when(projectService.getProjectsAccessibleByUserId(1)).thenReturn(projects);
@@ -86,7 +92,9 @@ class ProjectControllerTest {
         session.setAttribute("userId", 1);
         session.setAttribute("role", Role.DEVELOPER);
 
-        when(projectAccessService.canCreateProject(1)).thenReturn(false);
+        doThrow(new InsufficientPermissionsException("Du har ikke adgang til at oprette et nyt projekt"))
+                .when(projectAccessService).requireCreateProject(1);
+
 
         mockMvc.perform(post("/projects/create")
                         .session(session)
@@ -94,8 +102,9 @@ class ProjectControllerTest {
                         .param("description", "Project Description")
                         .param("dueDate", LocalDate.now().plusDays(7).toString()))
                 .andDo(print())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/error"));
+                .andExpect(status().isForbidden())
+                .andExpect(view().name("error"))
+                .andExpect(model().attribute("status", 403));
 
         verify(projectService, never()).createProject(any(ProjectForm.class), anyInt());
 

@@ -1,12 +1,16 @@
 package com.kodebutikken.pct.service;
 
 import com.kodebutikken.pct.dto.TaskForm;
-import com.kodebutikken.pct.exception.UnauthorizedException;
+import com.kodebutikken.pct.exception.ProjectNotFoundException;
+import com.kodebutikken.pct.model.ProjectStats;
+import com.kodebutikken.pct.model.Resource;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TaskService {
@@ -24,7 +28,7 @@ public class TaskService {
 
     public void createTask(TaskForm taskForm, int subprojectId, int userId) {
         if(!subprojectService.existsById(subprojectId)) {
-            throw new IllegalArgumentException("Delprojekt findes ikke");
+            throw new ProjectNotFoundException("Delprojekt findes ikke");
         }
 
         if(taskForm.getEstimatedTime() <= 0) {
@@ -39,9 +43,7 @@ public class TaskService {
             throw new IllegalArgumentException("Deadline må ikke være i fortiden");
         }
         Integer projectId = subprojectService.getProjectIdBySubprojectId(subprojectId);
-        if(projectId == null || !projectAccessService.canEditProject(projectId, userId)) {
-            throw new UnauthorizedException("Du har ikke adgang til dette projekt");
-        }
+        projectAccessService.requireEditProject(projectId, userId);
 
         Task task = new Task();
         task.setTitle(taskForm.getTitle());
@@ -49,6 +51,7 @@ public class TaskService {
         task.setEstimatedHours(taskForm.getEstimatedTime());
         task.setDeadline(taskForm.getDeadline());
         task.setSubprojectId(subprojectId);
+        task.setResourceId(taskForm.getResourceId());
 
         taskRepository.createTask(task);
     }
@@ -57,5 +60,30 @@ public class TaskService {
         // Implementer logikken for at hente alle opgaver for et givent delprojekt
         // Brug subprojectId til at filtrere opgaverne i databasen
         return taskRepository.getTasksBySubprojectId(subprojectId);
+    }
+
+    public List<Resource> getResourcesForSubproject(int subprojectId) {
+        // Implementer logikken for at hente alle ressourcer tilknyttet et givent projekt
+        // Brug projectId til at filtrere ressourcerne i databasen
+        return taskRepository.getResourcesForSubproject(subprojectId);
+    }
+
+    public ProjectStats getProjectStats(int projectId) {
+        return taskRepository.getProjectStats(projectId);
+    }
+
+    public Map<Integer, Integer> getTaskCountsByProjectId(int projectId) {
+        return taskRepository.getTaskCountsByProjectId(projectId);
+    }
+
+    @Transactional
+    public void deleteTask(int pid, int tid, int userId) {
+        if(!subprojectService.existsById(pid)) {
+            throw new ProjectNotFoundException("Delprojekt findes ikke");
+        }
+        int projectId = subprojectService.getProjectIdBySubprojectId(pid);
+        projectAccessService.requireEditProject(projectId, userId);
+
+        taskRepository.deleteTask(pid, tid);
     }
 }

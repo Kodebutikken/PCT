@@ -44,4 +44,13 @@ public class GlobalExceptionHandler {
         model.addAttribute("message", e.getMessage());
         return "error";
     }
+
+    @ExceptionHandler(InsufficientPermissionsException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleInsufficientPermissionsException(InsufficientPermissionsException e, Model model) {
+        model.addAttribute("status", 403);
+        model.addAttribute("error", "Adgang nægtet");
+        model.addAttribute("message", e.getMessage());
+        return "error";
+    }
 }

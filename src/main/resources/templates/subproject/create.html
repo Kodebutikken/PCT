@@ -7,14 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center">
-<main>
-    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-s">
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
+
+<main class="flex-1 w-full flex justify-center items-center">
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-sm">
         <form th:action="@{'/projects/' + ${projectId} + '/subprojects/create'}"
               th:object="${subprojectForm}"
               method="post">
             <div class="grid gap-4 mb-4">
-                <h1>Opret delprojekt</h1>
+                <h1 class="text-xl font-semibold text-gray-900">Opret delprojekt</h1>
                 <!--                <p th:text="'Under projektet: ' + ${project.title}"></p>-->
             </div>
 
@@ -48,16 +50,20 @@
                 </p>
             </div>
 
-            <div class="form-group">
+            <div class="flex justify-between">
+                <a th:href="@{/projects/{id}(id=${projectId})}">
+                    <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition"
+                            type="button">Annuller
+                    </button>
+                </a>
                 <button class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition"
                         type="submit">Opret delprojekt
-                </button>
-                <button class="bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition"
-                        type="button" onclick="window.history.back()">Annuller
                 </button>
             </div>
         </form>
     </div>
 </main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
 </body>
 </html>

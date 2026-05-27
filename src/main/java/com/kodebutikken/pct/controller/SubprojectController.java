@@ -1,6 +1,7 @@
 package com.kodebutikken.pct.controller;
 
 import com.kodebutikken.pct.dto.SubprojectForm;
+import com.kodebutikken.pct.model.Resource;
 import com.kodebutikken.pct.model.Subproject;
 import com.kodebutikken.pct.model.Task;
 import com.kodebutikken.pct.service.ProjectAccessService;
@@ -30,31 +31,13 @@ public class SubprojectController {
         this.projectAccessService = projectAccessService;
     }
 
-    @GetMapping("/{id}/subprojects")
-    public String showSubprojects(@PathVariable int id, HttpSession session, Model model) {
-        Integer userId = (Integer) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/users/login";
-        }
-        if (!projectAccessService.canViewProject(id, userId)) {
-            return "redirect:/error";
-        }
-
-        List<Subproject> subprojects = subprojectService.getAllSubProjects(id);
-        model.addAttribute("subprojects", subprojects);
-        model.addAttribute("projectId", id);
-        return "subproject/index";
-    }
-
     @GetMapping("/{id}/subprojects/create")
     public String showCreateSubprojectForm(@PathVariable int id, HttpSession session, Model model) {
         Integer userId = (Integer) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/users/login";
         }
-        if (!projectAccessService.canEditProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireEditProject(id, userId);
 
         model.addAttribute("subprojectForm", new SubprojectForm());
         model.addAttribute("projectId", id);
@@ -67,10 +50,7 @@ public class SubprojectController {
         if (userId == null) {
             return "redirect:/users/login";
         }
-
-        if (!projectAccessService.canEditProject(id, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireEditProject(id, userId);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("projectId", id);
@@ -84,7 +64,7 @@ public class SubprojectController {
             model.addAttribute("projectId", id);
             return "subproject/create";
         }
-        return "redirect:/projects/" + id + "/subprojects";
+        return "redirect:/projects/" + id;
     }
 
     @GetMapping("/subprojects/{id}/tasks")
@@ -95,13 +75,74 @@ public class SubprojectController {
         }
 
         Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
-        if (projectId == null || !projectAccessService.canViewProject(projectId, userId)) {
-            return "redirect:/error";
-        }
+        projectAccessService.requireViewProject(projectId, userId);
+        Subproject subproject = subprojectService.getSubprojectById(id);
 
         List<Task> tasks = taskService.getTasksBySubprojectId(id);
+        List<Resource> resources = taskService.getResourcesForSubproject(id);
+
         model.addAttribute("tasks", tasks);
+        model.addAttribute("subproject", subproject);
+        model.addAttribute("projectName", subprojectService.getProjectNameBySubprojectId(id));
+        model.addAttribute("canEditProject", projectAccessService.canEditProject(projectId, userId));
+        model.addAttribute("canManageProject", projectAccessService.canManageProject(projectId, userId));
+        model.addAttribute("canDeleteProject", projectAccessService.canDeleteProject(projectId, userId));
+        model.addAttribute("resources", resources);
+        return "subproject/spPage";
+    }
+
+    @GetMapping("/subprojects/{id}/edit")
+    public String showEditSubprojectForm(@PathVariable int id, HttpSession session, Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
+        projectAccessService.requireEditProject(projectId, userId);
+        model.addAttribute("subprojectForm", subprojectService.getEditForm(id));
         model.addAttribute("subprojectId", id);
-        return "task/list";
+        return "subproject/edit";
+    }
+
+    @PostMapping("/subprojects/{id}/edit")
+    public String updateSubproject(@PathVariable int id,
+                                   @Valid @ModelAttribute("subprojectForm") SubprojectForm subprojectForm,
+                                   BindingResult bindingResult,
+                                   HttpSession session,
+                                   Model model) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
+        projectAccessService.requireEditProject(projectId, userId);
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("subprojectId", id);
+            return "subproject/edit";
+        }
+
+        try {
+            subprojectService.updateSubproject(id, subprojectForm, userId);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("globalError", e.getMessage());
+            model.addAttribute("subprojectId", id);
+            model.addAttribute("isEdit", true);
+            return "project/edit";
+        }
+
+        return "redirect:/projects/subprojects/" + id + "/tasks";
+    }
+
+    @PostMapping("/subprojects/{id}/delete")
+    public String deleteSubproject(@PathVariable int id, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/login";
+        }
+        Integer projectId = subprojectService.getProjectIdBySubprojectId(id);
+        subprojectService.deleteSubproject(id, userId);
+        return "redirect:/projects/" + projectId;
     }
 }

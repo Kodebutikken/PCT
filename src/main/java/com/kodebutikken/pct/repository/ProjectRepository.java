@@ -32,7 +32,8 @@ public class ProjectRepository {
             rs.getString("title"),
             rs.getString("description"),
             rs.getDate("deadline").toLocalDate(),
-            rs.getInt("created_by")
+            rs.getInt("created_by"),
+            rs.getTimestamp("created_at").toLocalDateTime()
     );
 
     private final RowMapper<ProjectMember> projectMemberRowMapper = (rs, rowNum) -> new ProjectMember(
@@ -73,7 +74,7 @@ public class ProjectRepository {
                     FROM project p
                     LEFT JOIN project_user pu ON p.id = pu.project_id
                     WHERE p.created_by = ? OR pu.user_id = ?
-                    ORDER BY p.deadline ASC, p.id DESC
+                    ORDER BY p.deadline, p.id DESC
                     """;
             return jdbcTemplate.query(sql, projectRowMapper, userId, userId);
         } catch (DataAccessException exception) {
@@ -92,6 +93,15 @@ public class ProjectRepository {
         }
     }
 
+    public String getProjectOwnerName(int projectId) {
+        try {
+            String sql = "SELECT name FROM user WHERE id = (SELECT created_by FROM project WHERE id = ?)";
+            return jdbcTemplate.queryForObject(sql, String.class, projectId);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ProjectNotFoundException("Projekt med id " + projectId + " blev ikke fundet");
+        }
+    }
+
     public void delete(int id, int userId) {
         String sql = "DELETE FROM project WHERE id = ? AND created_by = ?";
         jdbcTemplate.update(sql, id, userId);
@@ -107,9 +117,15 @@ public class ProjectRepository {
     }
 
     public boolean isProjectOwner(int projectId, int userId) {
-        String sql = "SELECT created_by FROM project WHERE id = ?";
-        Integer ownerId = jdbcTemplate.queryForObject(sql, Integer.class, projectId);
-        return ownerId != null && ownerId == userId;
+        try {
+            String sql = "SELECT created_by FROM project WHERE id = ?";
+            Integer ownerId = jdbcTemplate.queryForObject(sql, Integer.class, projectId);
+            return ownerId != null && ownerId == userId;
+        } catch (EmptyResultDataAccessException exception) {
+            throw new ProjectNotFoundException("Projekt med id " + projectId + " blev ikke fundet");
+        } catch (DataAccessException exception) {
+            throw new DatabaseOperationException(exception.getMessage());
+        }
     }
 
     public boolean isProjectMember(int projectId, int userId) {
@@ -146,7 +162,7 @@ public class ProjectRepository {
                     FROM project_user pu
                     JOIN user u ON u.id = pu.user_id
                     WHERE pu.project_id = ?
-                    ORDER BY u.name ASC
+                    ORDER BY u.name
                     """;
             return jdbcTemplate.query(sql, projectMemberRowMapper, projectId);
         } catch (DataAccessException exception) {

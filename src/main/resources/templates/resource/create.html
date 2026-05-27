@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Log ind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
+<main class="flex-1 w-full flex justify-center items-center">
+
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4">Opret Ressource</h1>
+        <form th:action="@{/resources/create}" th:object="${resourceForm}" method="post">
+            <div class="mb-4">
+                <label class="block text-sm text-gray-500 mb-1">Ressource Navn
+                    <input type="text" name="name" placeholder="Ressource Navn" required
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                </label>
+                <p th:if="${#fields.hasErrors('name')}"
+                   th:errors="*{name}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm text-gray-500 mb-1">Kompetencer
+                    <input type="text" name="skills" placeholder="Kompetencer (komma-separeret)" required maxlength="50"
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                </label>
+                <p th:if="${#fields.hasErrors('skills')}"
+                   th:errors="*{skills}"
+                   class="text-red-600 text-xs mt-1">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm text-gray-500 mb-1">Daglige timer
+                    <input type="number" name="dailyWorkingHours" placeholder="Daglige timer" required min="0" max="24"
+                           step="0.5"
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                </label>
+                <p th:if="${#fields.hasErrors('dailyWorkingHours')}"
+                   th:errors="*{dailyWorkingHours}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm text-gray-500 mb-1">Timeløn
+                    <input type="number" name="hourlyWage" placeholder="Timeløn" required min="0" step="1"
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+                </label>
+                <p th:if="${#fields.hasErrors('hourlyWage')}"
+                   th:errors="*{hourlyWage}"
+                   class="text-red-600 text-xs mt-1">
+                </p>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-500 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition">
+                Opret Ressource
+            </button>
+        </form>
+        <a th:href="@{/resources}">
+            <button type="button"
+                    class="w-full bg-gray-900 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition mt-2">
+                Tilbage
+            </button>
+        </a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
+</body>
+</html>

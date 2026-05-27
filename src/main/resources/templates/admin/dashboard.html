@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+<header th:replace="~{fragments/fragments :: header}"></header>
+<main class="flex-1 w-full max-w-5xl mx-auto px-4 py-10">
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+        <p class="text-gray-700 mb-4">Her kan du administrere dine brugere og ressourcer.</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full
+        max-w-md mx-auto shadow-lg">
+        <h2 class="text-xl font-medium text-gray-900 mb-1">Velkommen, Admin!</h2>
+        <div class="flex flex-col space-y-4">
+            <a th:href="@{/admin/resources}">
+                <button type="button"
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition w-full">
+                    Administrer Ressourcer
+                </button>
+            </a>
+            <a th:href="@{/admin/users}">
+                <button type="button"
+                        class="bg-green-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-green-600 transition w-full">
+                    Administrer Brugere
+                </button>
+            </a>
+        </div>
+
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl p-8 w-full
+        mx-auto shadow-lg mt-8">
+        <h2 class="text-xl font-medium text-gray-900 mb-1">Ressourcer</h2>
+        <p class="text-gray-700 mb-4">Her kan du se og administrere alle dine ressourcer.</p>
+        <div th:if="${#lists.isEmpty(resources)}" class="mt-6">
+            <p class="text-gray-500">Du har ingen ressourcer endnu. Opret din første ressource for at komme i gang!</p>
+            <a th:href="@{/admin/resources/create}">
+                <button type="button"
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition mt-4">
+                    Opret Din Første Ressource
+                </button>
+            </a>
+        </div>
+        <div class="block-list" th:unless="${#lists.isEmpty(resources)}">
+            <table class="w-full border border-gray-200 rounded-lg mt-4">
+                <thead>
+                <tr class="bg-gray-100">
+                    <th class="text-left px-4 py-2">Ressource Navn</th>
+                    <th class="text-left px-4 py-2">Kompetencer</th>
+                    <th class="text-left px-4 py-2">Kapacitet</th>
+                    <th class="text-left px-4 py-2">Timeløn</th>
+                    <th class="text-left px-4 py-2">Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="resource : ${resources}" class="border-t border-gray-200 hover:bg-gray-50">
+                    <td class="px-4 py-2" th:text="${resource.name}">Ressource Navn</td>
+                    <td class="px-4 py-2" th:text="${resource.skills}">Ressource Kompetencer</td>
+                    <td class="px-4 py-2" th:text="${resource.dailyWorkingHours} + ' timer/dag'">Ressource Kapacitet
+                    </td>
+                    <td class="px-4 py-2" th:text="${resource.hourlyWage} + 'kr' + ' /time'">Ressource Timeløn</td>
+                    <td class="flex justify-center items-center px-4 py-2 gap-2">
+                        <a th:href="@{/admin/resources/{id}/edit (id=${resource.id})}">
+                            <button class="bg-blue-500 text-sm text-white px-3 py-2 rounded hover:bg-blue-600 transition flex-auto flex-nowrap">
+                                Rediger
+                            </button>
+                        </a>
+                        <form th:action="@{|/admin/resources/${resource.id}/delete|}" method="post"
+                              onsubmit="return confirm('Er du sikker på, at du vil slette denne ressource?');">
+                            <button class="bg-red-500 text-sm text-white px-3 py-2 rounded hover:bg-red-600 transition"
+                                    type="submit">
+                                Slet
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <a th:href="@{/admin/resources/create}">
+                <button type="button"
+                        class="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition mt-4">
+                    Opret Ny Ressource
+                </button>
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/fragments :: footer}"></footer>
+</body>
+</html>
